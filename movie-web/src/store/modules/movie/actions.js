@@ -12,6 +12,11 @@ export default {
         commit("GET_MOVIE", res.data)
         return res.data
     },
+    async fetchMovieTopView({ commit }) {
+        const res = await movieService.getTopView()
+        commit("GET_TOP_MOVIE", res.data)
+        return res.data
+    },
     async createMovie({ commit }, data) {
         const res = await movieService.create(data)
         commit("POST_MOVIE", res.data)

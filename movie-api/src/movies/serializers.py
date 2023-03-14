@@ -22,6 +22,7 @@ class MovieSerializer(ModelSerializer):
         fields = ['id', 'category', 'country', 'name',
                   'thumbnail', 'views', 'created_at', 'status']
         
+        
 class MovieUpdateViewSerializer(ModelSerializer):
     class Meta:
         model = Movie

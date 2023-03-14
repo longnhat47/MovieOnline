@@ -1,3 +1,4 @@
 export default {
-  movie: []
+  movie: [],
+  hotMovie: null
 };

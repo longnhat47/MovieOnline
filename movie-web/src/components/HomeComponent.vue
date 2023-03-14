@@ -8,16 +8,16 @@
             <a href="#" class="btn btn-secondary btn-sm show-more-btn">Xem tất cả</a>
           </div>
         </div>
-        <div class="row mb-4">
-          <div class="col-5 movie-item movie-item-main">
-            <router-link :to="{name: 'Movie', params: {id : movie[0].id}}" class="movie-link"><img
-                :src="movie[0].thumbnail" class="movie-thumbnail"
-                alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{movie[0].name}}</span></router-link>
-
+        <div class="row mb-4" >
+          <div class="col-5 movie-item movie-item-main" >
+            <!-- <router-link :to="{name: 'Movie', params: {id : hotMovie[0].id}}" class="movie-link"><img -->
+            <router-link :to="'movie/'+hotMovie[0].id" class="movie-link"><img
+                :src="hotMovie[0].thumbnail" class="movie-thumbnail"
+                alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{hotMovie[0].name}}</span></router-link>
           </div>
           <div class="col-7">
             <div class="row">
-              <div class="col-4 movie-item" v-for="m in movie.slice(0,6)" :key="m.id">
+              <div class="col-4 movie-item" v-for="m in hotMovie.slice(1,7)" :key="m.id">
                 <router-link :to="{name: 'Movie', params: {id : m.id}}" href="#" class="movie-link"><img
                     :src="m.thumbnail"
                     class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>
@@ -30,7 +30,7 @@
 
       <div class="row">
         <div class="row mb-2">
-          <h3 class="col-10">Hot hòn họt</h3>
+          <h3 class="col-10">Phim</h3>
           <div class="col-2 text-end">
             <a href="#" class="btn btn-secondary btn-sm show-more-btn">Xem tất cả</a>
           </div>
@@ -53,17 +53,17 @@ import { mapActions, mapState } from 'vuex'
 export default {
   data(){
     return{
-      hotMovie : null
     }
   },
   computed:{
-    ...mapState('movie', ['movie'])
+    ...mapState('movie', ['movie','hotMovie']),
   },
   methods: {
-    ...mapActions('movie',['fetchMovie']),
+    ...mapActions('movie',['fetchMovie', 'fetchMovieTopView']),
 
   },
   created(){
+    this.fetchMovieTopView();
     this.fetchMovie();
   }
 

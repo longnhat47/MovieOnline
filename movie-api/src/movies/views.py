@@ -1,6 +1,6 @@
-from django.shortcuts import render
 from rest_framework import status, mixins
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.generics import (
     RetrieveAPIView, 
     ListAPIView,
@@ -8,11 +8,26 @@ from rest_framework.generics import (
     UpdateAPIView,
     DestroyAPIView,
     RetrieveUpdateDestroyAPIView)
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import(
+    IsAuthenticated,
+    IsAdminUser, 
+    IsAuthenticatedOrReadOnly,
+)
 
 from .models import *
 from .serializers import *
 # Create your views here.
+
+s1 = u'ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ'
+s0 = u'AAAAEEEIIOOOOUUYaaaaeeeiioooouuyAaDdIiUuOoUuAaAaAaAaAaAaAaAaAaAaAaAaEeEeEeEeEeEeEeEeIiIiOoOoOoOoOoOoOoOoOoOoOoOoUuUuUuUuUuUuUuYyYyYyYy'
+def remove_accents(input_str):
+	s = ''
+	for c in input_str:
+		if c in s1:
+			s += s0[s1.index(c)]
+		else:
+			s += c
+	return s
 
 # CATEGORY VIEWS----------------------------------------------------------------
 class CreateCategoryView(CreateAPIView):
@@ -76,11 +91,22 @@ class ListMovieView(ListAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-class CreateMovieView(CreateAPIView):
-    queryset = Movie.objects.all()
-    serializer_class = MovieCreateSerializer
+class CreateMovieView(APIView):
     permission_classes = [IsAdminUser]
 
+    def post(self, request, *args, **kwargs):
+        # video = request.FILES.get('video')
+        # thumbnail = request.FILES.get('thumbnail')
+        # print(video.file)
+        # print(thumbnail.file)
+        # video = request.data.get('video')
+        # request.data.update({'thumbnail': remove_accents(str(thumbnail)), 'video': remove_accents(str(video))})
+        serializer = MovieCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class MovieRetrieveView(RetrieveAPIView):
     queryset = Movie.objects.all()
@@ -89,6 +115,9 @@ class MovieRetrieveView(RetrieveAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     
 
+class MovieBestView(ListAPIView):
+    queryset = Movie.objects.all().order_by('-views')[0:7]
+    serializer_class = MovieSerializer
 
 
 class MovieUpdateDeleteView(UpdateAPIView, DestroyAPIView):
