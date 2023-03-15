@@ -39,7 +39,6 @@ class CreateCategoryView(CreateAPIView):
 class ListCategoryView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 
@@ -55,7 +54,6 @@ class CategoryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class ListCountryView(ListAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class CreateCountryView(CreateAPIView):
@@ -88,7 +86,6 @@ class CountryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class ListMovieView(ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class CreateMovieView(APIView):
@@ -112,7 +109,6 @@ class MovieRetrieveView(RetrieveAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailSerializer
     lookup_field = 'id'
-    permission_classes = [IsAuthenticatedOrReadOnly]
     
 
 class MovieBestView(ListAPIView):
@@ -146,7 +142,6 @@ class MovieUpdateView(UpdateAPIView):
 
 #COMMENT VIEWS----------------------------------------------------------------
 class CommentListView(ListAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 

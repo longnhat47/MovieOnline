@@ -20,19 +20,15 @@ export default {
     async createMovie({ commit }, data) {
         const res = await movieService.create(data)
         commit("POST_MOVIE", res.data)
-        console.log(res.status)
         return res
     },
     async updateMovie({ commit }, data) {
-        console.log(data)
         const res = await movieService.update(data)
         commit("PUT_MOVIE", res.data)
-        console.log(res)
         return res
     },
     /* eslint-disable */
     async updateViewMovie({ commit }, data) {
-        console.log(data)
         const res = await movieService.updateView(data)
         // commit("PUT_MOVIE", res.data)
         console.log(res)

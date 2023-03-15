@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="container">
-      ADMINVIEW
+      
     </div>
   </div>
 </template>

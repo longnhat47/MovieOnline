@@ -18,7 +18,7 @@
           <div class="col-7">
             <div class="row">
               <div class="col-4 movie-item" v-for="m in hotMovie.slice(1,7)" :key="m.id">
-                <router-link :to="{name: 'Movie', params: {id : m.id}}" href="#" class="movie-link"><img
+                <router-link :to="'movie/'+m.id" class="movie-link"><img
                     :src="m.thumbnail"
                     class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>
               </div>
@@ -37,7 +37,7 @@
         </div>
         <div class="row sub-show">
           <div class="col-4 movie-item" v-for="m in movie" :key="m.id">
-            <router-link :to="{name: 'Movie', params: {id : m.id}}"  class="movie-link"><img
+            <router-link :to="'movie/'+m.id"  class="movie-link"><img
                 :src="m.thumbnail"
                 class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>
           </div>
