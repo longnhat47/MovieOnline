@@ -30,6 +30,28 @@ class UserLoginView(CreateAPIView):
         return Response(data={"message":"Login fail"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserRegisterView(CreateAPIView):
+    serializer_class = UserRegisterSerializer
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        full_name = request.data.get('full_name')
+        birthday = request.data.get('birthday')
+        user = get_user_model().objects.filter(email=email)
+        if len(user) == 0:
+            if len(password) < 6:
+                return Response(data={"message":"Password must have 6 or more charater"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                u = User.objects.create(email=email, full_name=full_name, birthday=birthday)
+                u.set_password(password)
+                u.save()
+                data = UserRegisterSerializer(instance=u).data
+                response = {"message":"Register successfull", 'data':data}
+                return Response(data=response, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data={"message":"Email is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserListView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer

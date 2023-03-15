@@ -4,16 +4,17 @@
       <p class="movie-name">Xem phim>{{ title }}</p>
       <video :src="movie.video" controls class="video object-fit-fill"></video>
       <p class="movie-desc mt-3">Mô tả: {{ movie.description }}</p>
-      <div class="review mt-5">
+      <div class="review mt-5 mb-5">
         <div class="review-form">
           <p>Bình luận</p>
           <div class="form-floating">
             <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
-              style="height: 100px"></textarea>
+              style="height: 100px" v-model="comment"></textarea>
             <label for="floatingTextarea2">Comments</label>
           </div>
+          <button class="btn btn-primary mt-2" @click="commentFunc">Bình luận</button>
         </div>
-        <div class="review-item" v-for="c in movie.comment" :key="c.id">
+        <div class="review-item mt-5" v-for="c in movie.comment" :key="c.id">
           <div class="row d-flex">
             <div class="row col-2">
               <div class="col-4">
@@ -45,29 +46,34 @@ export default {
   data() {
     return {
       img: API_MEDIA,
-      title: ''
+      title: '',
+      comment: ''
     }
   },
-  components: {
-  },
   computed: {
-    ...mapState('movie', ['movie'])
-  },
-  filters: {
-
+    ...mapState('movie', ['movie']),
+    ...mapState('user', ['currentUser']),
   },
   methods: {
     ...mapActions('movie', ['fetchMovieDetail', 'updateViewMovie']),
+    ...mapActions('comment', ['createComment']),
     formatDate(value) {
       if (value) {
         return moment(String(value)).format('MM/DD/YYYY hh:mm')
       }
       return 'NAN'
+    },
+    commentFunc(){
+      if(this.currentUser.token){
+        this.createComment({movie: this.$route.params.id, content: this.comment})
+        this.$router.go(this.$router.currentRoute)
+      }else{
+        this.$router.push('/login')
+      }
     }
   },
   created() {
     this.fetchMovieDetail(this.$route.params.id).then((o) => {
-      console.log(o)
       this.title = o.category.name+'>'+ o.name
     }).finally(() => this.updateViewMovie(this.$route.params.id))
 

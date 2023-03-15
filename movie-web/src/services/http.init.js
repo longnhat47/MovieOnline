@@ -16,8 +16,8 @@ export default class Http {
     const store = require("@/store");
     console.log('store')
     console.log(store.default.state)
-    const token = store ? store.default.state.user.currentUser.token.access : null;
     // // const token = localStorage.getItem('token')
+    const token = store ? store.default.state.user.currentUser.token.access : null;
     if(token){
       request.headers["Authorization"] = `Bearer ${token}`;
     }

@@ -71,6 +71,7 @@ export default {
   created() {
     this.fetchCategory();
     this.fetchCountry();
+    // console.log(this.currentUser.user == '')
   }
 
 }

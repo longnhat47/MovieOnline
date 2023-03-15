@@ -1,7 +1,9 @@
 from rest_framework.serializers import ModelSerializer
 from .models import User
 
-#Login
+# Login
+
+
 class UserLoginSerializer(ModelSerializer):
     class Meta:
         model = User
@@ -10,27 +12,42 @@ class UserLoginSerializer(ModelSerializer):
             'password': {'write_only': True},
         }
 
+
 class UserLoginResponseSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'image', 'birthday', 'is_superuser']
+        fields = ['id', 'email', 'full_name',
+                  'image', 'birthday', 'is_superuser']
 
-#View List, Register
-class UserSerializer(ModelSerializer):
+# View Register
+class UserRegisterSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'full_name', 'image', 'birthday', 'status']
+        fields = ['id', 'email', 'password',
+                  'full_name', 'birthday', 'status']
         extra_kwargs = {
             'password': {'write_only': True},
             'status': {'read_only': True}
         }
 
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = super().create(validated_data)
-        user.set_password(password)
-        user.save()
-        return user
+    # def create(self, validated_data):
+    #     password = validated_data.pop('password')
+    #     user = super().create(validated_data)
+    #     user.set_password(password)
+    #     user.save()
+    #     return user
+# View List
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'password',
+                  'full_name', 'image', 'birthday', 'status']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'status': {'read_only': True}
+        }
 
 
 #User in comment
@@ -40,17 +57,17 @@ class UserCommentSerializer(ModelSerializer):
         fields = ['id', 'email', 'full_name', 'image']
 
 
-#Update User
+# Update User
 class UpdateUserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'full_name', 'image', 'birthday']
-        extra_kwargs = {
-            'email': {'read_only': True}
-        }
+        # extra_kwargs = {
+        #     'email': {'read_only': True}
+        # }
 
 
-#Update User Password
+# Update User Password
 class UpdatePasswordUserSerializer(ModelSerializer):
     class Meta:
         model = User

@@ -63,7 +63,7 @@ class MovieDetailSerializer(ModelSerializer):
         return CountrySerializer(instance=coun, many=True).data[0]
 
     def get_comment(self, obj):
-        comment = Comment.objects.filter(movie=obj.id)
+        comment = Comment.objects.filter(movie=obj.id).order_by('-created_at')
         return CommentSerializer(instance=comment, many=True).data
 
 

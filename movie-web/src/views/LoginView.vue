@@ -12,13 +12,14 @@
         </div>
         <div class="mb-3 row">
           <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-          <div class="col-sm-10">
+          <div class="col-sm-10 mb-1">
             <input type="password" required class="form-control" id="inputPassword" v-model="data.password">
           </div>
+          <span>Chưa có tài khoản?<a href="/register">Đăng ký</a></span>
         </div>
         <div class="mb-3 row text-center">
           <div class="col-sm-6">
-            <button class="btn btn-secondary me-5">Quay lại</button>
+            <button class="btn btn-secondary me-5" @click="this.$router.back()">Quay lại</button>
             <button class="btn btn-primary">Đăng nhập</button>
           </div>
         </div>
