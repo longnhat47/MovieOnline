@@ -21,7 +21,7 @@ export default {
     commit("LOG_OUT")
     return 0
   },
-  async updateProfile({ commit }, data){
+  async updateUser({ commit }, data){
     const profile = await userService.updateProfile(data)
     commit("RESET_USER")
     return profile.data

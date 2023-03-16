@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row main-show">
         <div class="row mb-2">
-          <h3 class="col-10">Hot hòn họt</h3>
+          <h3 class="col-10">Phim hot</h3>
           <div class="col-2 text-end">
             <a href="#" class="btn btn-secondary btn-sm show-more-btn">Xem tất cả</a>
           </div>
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="row sub-show">
-          <div class="col-4 movie-item" v-for="m in movie" :key="m.id">
+          <div class="col-4 movie-item" v-for="m in movie.slice(0,9)" :key="m.id">
             <router-link :to="'movie/'+m.id"  class="movie-link"><img
                 :src="m.thumbnail"
                 class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>

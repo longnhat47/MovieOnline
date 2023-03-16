@@ -8,7 +8,7 @@
   
 <script>
 import HeaderComponent from '../../components/HeaderComponent.vue';
-import AdminComponent from '../../components/AdminComponent';
+import AdminComponent from '../../components/admin/AdminComponent';
 import FooterComponent from '../../components/FooterComponent';
 export default {
     components: {
