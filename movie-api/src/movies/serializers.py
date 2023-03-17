@@ -67,6 +67,12 @@ class MovieDetailSerializer(ModelSerializer):
         return CommentSerializer(instance=comment, many=True).data
 
 
+class MovieDetailAdminSerializer(ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ['id', 'category', 'country', 'name', 'thumbnail',
+                  'description', 'video', 'views', 'created_at', 'status']
+
 
 class CommentSerializer(ModelSerializer):
     user = SerializerMethodField()

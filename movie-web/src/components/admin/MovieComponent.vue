@@ -3,38 +3,80 @@
     <div class="container">
       <div class="row">
         <h3 class="col-3">Category</h3>
-        <button class="btn btn-success col-1" @click="modalEvent('add')">Thêm mới</button>
+        <button class="btn btn-success col-2" @click="modalEvent('add')">Thêm mới</button>
       </div>
       <table class="table text-light">
         <thead>
           <tr class="row">
-            <th class="col-4" scope="col">ID</th>
-            <th class="col-5" scope="col">Name</th>
+            <th class="col-1" scope="col">ID</th>
+            <th class="col-2" scope="col">Thumbnail</th>
+            <th class="col-1" scope="col">Category</th>
+            <th class="col-1" scope="col">Country</th>
+            <th class="col-2" scope="col">Name</th>
+            <th class="col-2" scope="col">Description</th>
+            <th class="col-1" scope="col">Status</th>
             <th class="col-2" scope="col"></th>
           </tr>
         </thead>
         <tbody>
           <tr class="row" v-for="(d, index) in data" :key="index">
-            <th class="col-4" scope="row">{{ d.id }}</th>
-            <td class="col-5">{{ d.name }}</td>
+            <th class="col-1" scope="row">{{ d.id }}</th>
+            <td class="col-2"><img class="thumbnail" :src="d.thumbnail" alt=""></td>
+            <td class="col-1">{{ nameCategory(d.category) }}</td>
+            <td class="col-1">{{ nameCountry(d.country) }}</td>
+            <td class="col-2">{{ d.name }}</td>
+            <td class="col-2">{{ d.description }}</td>
+            <td class="col-1"><input class="form-check-input" type="checkbox" disabled :checked="d.status"></td>
             <td class="col-2 d-flex justify-content-end">
-              <button class="btn btn-secondary" @click="editModal(d)">Sửa</button>
-              <button class="btn btn-danger ms-2" @click="deleteModal(d)">Xóa</button>
+              <button class="col-6 btn btn-secondary" @click="editModal(d)">Sửa</button>
+              <button class="col-6 btn btn-danger ms-2" @click="deleteModal(d)">Xóa</button>
             </td>
           </tr>
         </tbody>
       </table>
 
       <!-- Modal -->
-      <div id="modal" class="modal" v-show="isShow">
+      <div ref="modal" id="modal" class="modal" v-show="isShow" @click="hideModal">
         <!-- Add -->
         <div class="modal-content" v-show="button.add">
           <div class="row justify-content-end">
             <button class="btn-close me-3" @click="modalEvent('add')"></button>
           </div>
-          <div class="p-4">
-            <label for="name" class="form-label">Tên danh mục</label>
-            <input type="text" class="form-control" id="name" placeholder="Tên danh mục" v-model="dataModel.name">
+          <div class="p-2">
+            <label for="movie-category" class="form-label">Danh mục</label>
+            <select class="form-select" :value="dataModel.category" @change="dataModel.category = $event.target.value"
+              id="movie-category" aria-label="Default select example">
+              <option v-for="c in category" :key="c.id" :value="c.id">
+                {{ c.name }}
+              </option>
+            </select>
+          </div>
+          <div class="p-2">
+            <label for="movie-country" class="form-label">Quốc gia</label>
+            <select class="form-select" :value="dataModel.country" @change="dataModel.country = $event.target.value"
+              id="movie-country" aria-label="Default select example">
+              <option v-for="c in country" :key="c.id" :value="c.id">
+                {{ c.name }}
+              </option>
+            </select>
+          </div>
+          <div class="p-2">
+            <label for="movie-name" class="form-label">Tên phim</label>
+            <input type="text" class="form-control" id="movie-name" placeholder="Tên phim" v-model="dataModel.name">
+          </div>
+          <div class="p-2">
+            <label for="movie-description" class="form-label">Mô tả</label>
+            <input type="text" class="form-control" id="movie-description" placeholder="Mô tả"
+              v-model="dataModel.description">
+          </div>
+          <div class="p-2">
+            <label for="movie-thumbnail" class="form-label">Thumbnail</label>
+            <input ref="thumbnailFile" type="file" class="form-control" id="movie-thumbnail" @change="getThumbnail">
+          </div>
+          <div class="p-2">
+            <label for="movie-video" class="form-label">Video</label>
+            <input ref="videoFile" type="file" class="form-control" id="movie-video" placeholder="Tên danh mục"
+              @change="getVideo">
           </div>
           <button class="col-1 btn btn-success" @click="addModel">Thêm</button>
         </div>
@@ -43,10 +85,48 @@
           <div class="row justify-content-end">
             <button class="btn-close me-3" @click="modalEvent('edit')"></button>
           </div>
-          <div class="p-4">
-            <label for="edit" class="form-label">Sửa danh mục</label>
-            <input ref="edit" type="text" class="form-control" id="edit" placeholder="Tên danh mục"
-              @input="dataModel.name = $event.target.value">
+          <div class="p-2">
+            <label for="movie-category" class="form-label">Danh mục</label>
+            <select class="form-select" @change="dataModel.category = $event.target.value" id="movie-category"
+              aria-label="Default select example">
+              <option v-for="c in category" :key="c.id" :value="c.id" :selected="c.id === dataModel.category">
+                {{ c.name }}
+              </option>
+            </select>
+          </div>
+          <div class="p-2">
+            <label for="movie-country" class="form-label">Quốc gia</label>
+            <select class="form-select" @change="dataModel.country = $event.target.value" id="movie-country"
+              aria-label="Default select example">
+              <option v-for="c in country" :key="c.id" :value="c.id" :selected="c.id === dataModel.country">
+                {{ c.name }}
+              </option>
+            </select>
+          </div>
+          <div class="p-2">
+            <label for="movie-name" class="form-label">Tên phim</label>
+            <input type="text" class="form-control" id="movie-name" placeholder="Tên phim" :value="dataModel.name">
+          </div>
+          <div class="p-2">
+            <label for="movie-description" class="form-label">Mô tả</label>
+            <input type="text" class="form-control" id="movie-description" placeholder="Mô tả"
+              :value="dataModel.description">
+          </div>
+          <div class="p-2">
+            <label for="movie-thumbnail" class="form-label me-2">Thumbnail</label>
+            <img v-if="!dataModel.thumbnail.name" :src="dataModel.thumbnail" alt="thumbnail" class="mb-2" style="height: 50px;">
+            <input ref="thumbnailFile" type="file" class="form-control" id="movie-thumbnail" @change="getThumbnail">
+          </div>
+          <div class="p-2">
+            <label for="movie-video" class="form-label me-2">Video</label>
+            <video v-if="!dataModel.video.name" :src="dataModel.video" alt="video" class="mb-2" style="height: 120px;"></video>
+            <input ref="videoFile" type="file" class="form-control" id="movie-video" placeholder="Tên danh mục"
+              @change="getVideo">
+          </div>
+          <div class="p-2">
+            <label for="movie-status" class="form-label me-2">Trạng thái</label>
+            <input type="checkbox" class="form-check-input" id="movie-status" :checked="dataModel.status"
+              @change="dataModel.status = $event.target.checked">
           </div>
           <button class="col-1 btn btn-primary" @click="editModel()">Sửa</button>
         </div>
@@ -74,7 +154,13 @@ export default {
       data: null,
       dataModel: {
         id: '',
-        name: ''
+        name: '',
+        category: '',
+        country: '',
+        description: '',
+        thumbnail: '',
+        video: '',
+        status: '',
       },
       isShow: false,
       button: {
@@ -84,15 +170,38 @@ export default {
       }
     }
   },
-  components: {
-
-  },
   computed: {
     ...mapState('movie', ['movie']),
-
+    ...mapState('category', ['category']),
+    ...mapState('country', ['country']),
+    nameCategory() {
+      return (id) => {
+        var name = ''
+        this.category.forEach((o) => {
+          if (o.id == id) {
+            name = o.name
+          }
+        })
+        return name
+      }
+    },
+    nameCountry() {
+      return (id) => {
+        var name = ''
+        this.country.forEach((o) => {
+          if (o.id == id) {
+            name = o.name
+          }
+        })
+        return name
+      }
+    }
   },
   methods: {
-    ...mapActions('movie', ['fetchMovie', 'createMovie', 'updateMovie', 'deleteMovie']),
+    ...mapActions('movie', ['fetchMovieAdmin', 'createMovie', 'updateMovie', 'deleteMovie']),
+    ...mapActions('category', ['ferchCategory']),
+    ...mapActions('country', ['ferchCountry']),
+
     modalEvent(str) {
       switch (str) {
         case 'add':
@@ -109,13 +218,15 @@ export default {
           break;
       }
     },
+    hideModal(event) {
+      if(event.target.id=='modal'){
+        this.$refs.modal.style.display = 'none'
+      }
+    },
     editModal(data) {
-      this.dataModel.id = data.id;
-      this.dataModel.name = data.name;
+      this.dataModel = data;
       this.isShow = !this.isShow;
       this.button.edit = !this.button.edit;
-      const el = this.$refs.edit
-      el.value = data.name
     },
     deleteModal(data) {
       this.dataModel.id = data.id;
@@ -128,14 +239,28 @@ export default {
       this.createMovie(this.dataModel)
       this.isShow = !this.isShow;
       this.button.add = !this.button.add;
-      console.log(this.data)
     },
-    editModel() {
-      this.updateMovie(this.dataModel)
+    async editModel() {
+      if (typeof (this.dataModel.thumbnail) != 'object') {
+        delete this.dataModel.thumbnail
+      }
+      if (typeof (this.dataModel.video) != 'object') {
+        delete this.dataModel.video
+      }
+      const res = await this.updateMovie(this.dataModel)
+      console.log(res)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
-          this.data[i].name = this.dataModel.name;
+          for (const [key] of Object.entries(this.data[i])) {
+            this.data[i][key] = res.data[key];
+          }
+          if(typeof(this.data[i].thumbnail) == 'undefined'){
+            this.data[i].thumbnail = res.data.thumbnail
+          }
+          if(typeof(this.data[i].video) == 'undefined'){
+            this.data[i].video = res.data.video
+          }
           break;
         } else {
           ++i;
@@ -158,10 +283,19 @@ export default {
       }
       this.isShow = !this.isShow;
       this.button.delete = !this.button.delete;
+    },
+    getThumbnail() {
+      this.dataModel.thumbnail = this.$refs.thumbnailFile.files[0]
+    },
+    getVideo() {
+      this.dataModel.video = this.$refs.videoFile.files[0]
+      console.log(this.dataModel)
     }
   },
   created() {
-    this.fetchMovie().then((o) => this.data = o);
+    this.fetchMovieAdmin().then((o) => this.data = o);
+    this.ferchCategory();
+    this.ferchCountry();
   }
 
 }
@@ -174,6 +308,10 @@ export default {
   background-color: #1a1a1a;
   padding: 48px;
   color: #ccc;
+
+  .thumbnail {
+    height: 50px;
+  }
 
   /* The Modal (background) */
   .modal {
@@ -190,6 +328,7 @@ export default {
     height: 100%;
     /* Full height */
     overflow: auto;
+
     /* Enable scroll if needed */
     background-color: rgb(0, 0, 0);
     /* Fallback color */

@@ -31,7 +31,6 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=255, blank=True)
     image = models.ImageField(upload_to='user_images', blank=True)
     birthday = models.DateField(blank=True, null=True)
-    status = models.BooleanField(default=True)
     username = None
     first_name= None
     last_name = None

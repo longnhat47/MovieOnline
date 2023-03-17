@@ -8,8 +8,17 @@ export default {
   RESET_USER(state, data) {
     state.currentUser.user = data.user
   },
-  DELETE_USER(){
-    // state.currentUser = null
+  DELETE_USER(state, data){
+    console.log(state.users)
+    var i = 0;
+      while (i < state.users.length) {
+        if (state.users[i].id === data.id) {
+          state.users.splice(i, 1);
+          break;
+        } else {
+          ++i;
+        }
+      }
   },
   LOG_OUT(state){
     state.currentUser.user = ''

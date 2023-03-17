@@ -11,6 +11,7 @@ urlpatterns = [
     path('country/<int:id>', CountryRetrieveUpdateDeleteView.as_view(), name='country-detail'),
 
     path('movie', ListMovieView.as_view(), name='movies'),
+    path('movie-admin', ListMovieAdminView.as_view(), name='movies-admin'),
     path('movie/best-view', MovieBestView.as_view(), name='movies-top-view'),
     path('movie/create', CreateMovieView.as_view(), name='movie-create'),
     path('movie/detail/<int:id>', MovieRetrieveView.as_view(), name='movie-detail'),

@@ -31,7 +31,7 @@ class commentService extends BaseService {
 
     async update(data) {
         try {
-            return await this.request().put(`${this.entity}/${data['id']}`, data)
+            return await this.request().patch(`${this.entity}/${data['id']}`, data)
         } catch (e) {
             return e.response
         }

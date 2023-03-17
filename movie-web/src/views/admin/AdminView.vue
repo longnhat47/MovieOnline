@@ -7,7 +7,7 @@
 </template>
   
 <script>
-import HeaderComponent from '../../components/HeaderComponent.vue';
+import HeaderComponent from '../../components/admin/HeaderAdminComponent.vue';
 import AdminComponent from '../../components/admin/AdminComponent';
 import FooterComponent from '../../components/FooterComponent';
 export default {

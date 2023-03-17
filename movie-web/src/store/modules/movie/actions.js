@@ -7,6 +7,11 @@ export default {
         commit("GET_MOVIE", res.data)
         return res.data
     },
+    async fetchMovieAdmin({ commit }) {
+        const res = await movieService.getAllAdmin()
+        commit("GET_MOVIE", res.data)
+        return res.data
+    },
     async fetchMovieDetail({ commit }, id) {
         const res = await movieService.get(id)
         commit("GET_MOVIE", res.data)
@@ -17,9 +22,11 @@ export default {
         commit("GET_TOP_MOVIE", res.data)
         return res.data
     },
+    /* eslint-disable */
     async createMovie({ commit }, data) {
         const res = await movieService.create(data)
-        commit("POST_MOVIE", res.data)
+        console.log(res)
+        // commit("POST_MOVIE", res.data)
         return res
     },
     async updateMovie({ commit }, data) {

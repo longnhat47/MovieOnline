@@ -13,6 +13,14 @@ class movieService extends BaseService {
         }
     }
 
+    async getAllAdmin() {
+        try {
+            return await this.request().get(`${this.entity}-admin`)
+        } catch (e) {
+            return e.response
+        }
+    }
+
     async get(id) {
         try {
             return await this.request().get(`${this.entity}/detail/${id}`)
@@ -31,7 +39,15 @@ class movieService extends BaseService {
 
     async create(data) {
         try {
-            return await this.request().post(`${this.entity}/create`, data)
+            const form = new FormData()
+            for(const [key, value] of Object.entries(data)) {
+                form.append(`${key}`, value)
+            }
+            return await this.request().post(`${this.entity}/create`, form, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
         } catch (e) {
             return e.response
         }
@@ -39,7 +55,15 @@ class movieService extends BaseService {
 
     async update(data) {
         try {
-            return await this.request().put(`${this.entity}/${data['id']}`, data)
+            const form = new FormData()
+            for(const [key, value] of Object.entries(data)) {
+                form.append(`${key}`, value)
+            }
+            return await this.request().patch(`${this.entity}/${data['id']}`, form, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
         } catch (e) {
             return e.response
         }

@@ -39,7 +39,15 @@ class UserService extends BaseService {
 
     async updateProfile(data) {
         try {
-            return await this.request().put(`${this.entity}/?id=${data.id}`, data)
+            const form = new FormData()
+            for(const [key, value] of Object.entries(data)) {
+                form.append(`${key}`, value)
+            }
+            return await this.request().patch(`${this.entity}/${data['id']}`, form, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
         } catch (e) {
             return e.response
         }

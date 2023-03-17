@@ -21,10 +21,10 @@ export default {
     commit("LOG_OUT")
     return 0
   },
-  async updateUser({ commit }, data){
-    const profile = await userService.updateProfile(data)
-    commit("RESET_USER")
-    return profile.data
+  async updateUser(data){
+    console.log(data)
+    const res = await userService.updateProfile(data)
+    return res
   },
   /* eslint-disable */
   async updatePassword({ commit }, data){
@@ -38,8 +38,8 @@ export default {
   },
   /* eslint-disable */
   async deleteUser({ commit }, data){
-    const res = await userService.delete(data)
-    commit("DELETE_USER")
+    const res = await userService.delete(data.id)
+    commit("DELETE_USER", res.data)
     return res.data
   },
 };

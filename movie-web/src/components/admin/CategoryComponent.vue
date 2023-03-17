@@ -26,7 +26,7 @@
       </table>
 
       <!-- Modal -->
-      <div id="modal" class="modal" v-show="isShow">
+      <div ref="modal" id="modal" class="modal" v-show="isShow" @click="hideModal">
         <!-- Add -->
         <div class="modal-content" v-show="button.add">
           <div class="row justify-content-end">
@@ -107,6 +107,11 @@ export default {
           this.isShow = !this.isShow;
           this.button.delete = !this.button.delete;
           break;
+      }
+    },
+    hideModal(event) {
+      if(event.target.id=='modal'){
+        this.$refs.modal.style.display = 'none'
       }
     },
     editModal(data) {

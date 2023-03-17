@@ -84,8 +84,14 @@ class CountryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 
 
 class ListMovieView(ListAPIView):
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.all().filter(status = True)
     serializer_class = MovieSerializer
+
+
+class ListMovieAdminView(ListAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieDetailAdminSerializer
+    permission_classes = [IsAdminUser]
 
 
 class CreateMovieView(APIView):
@@ -106,19 +112,19 @@ class CreateMovieView(APIView):
         
 
 class MovieRetrieveView(RetrieveAPIView):
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.all().filter(status = True)
     serializer_class = MovieDetailSerializer
     lookup_field = 'id'
     
 
 class MovieBestView(ListAPIView):
-    queryset = Movie.objects.all().order_by('-views')[0:7]
+    queryset = Movie.objects.all().filter(status = True).order_by('-views')[0:7]
     serializer_class = MovieSerializer
 
 
 class MovieUpdateDeleteView(UpdateAPIView, DestroyAPIView):
     queryset = Movie.objects.all()
-    serializer_class = MovieDetailSerializer
+    serializer_class = MovieDetailAdminSerializer
     lookup_field = 'id'
     permission_classes = [IsAuthenticated, IsAdminUser]
 
