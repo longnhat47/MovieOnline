@@ -22,12 +22,14 @@ export default {
     return 0
   },
   async updateUser(data){
+    console.log('data action')
     console.log(data)
     const res = await userService.updateProfile(data)
     return res
   },
   /* eslint-disable */
   async updatePassword({ commit }, data){
+    console.log(data)
     const res = await userService.updatePassword(data)
     // commit("RESET_USER")
     return res.data

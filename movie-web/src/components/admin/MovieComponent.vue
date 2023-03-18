@@ -248,7 +248,6 @@ export default {
         delete this.dataModel.video
       }
       const res = await this.updateMovie(this.dataModel)
-      console.log(res)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {

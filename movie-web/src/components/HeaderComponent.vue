@@ -30,9 +30,9 @@
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-secondary" type="submit">Tìm</button>
           </form>
-          <button type="button" class="btn btn-outline-light btn-sm" v-if="currentUser.user == ''" @click="login">Đăng nhập</button>
+          <button type="button" class="btn btn-outline-light btn-sm" v-if="currentUser == null" @click="login">Đăng nhập</button>
           <div class="d-flex" v-else>
-            <p class="text-white mb-0">{{ currentUser.user.full_name}}</p>
+            <p class="text-white mb-0" v-if="currentUser.full_name">{{ currentUser.full_name}}</p>
             <button type="button" class="btn btn-outline-light btn-sm ms-4" @click="logoutFunc">Đăng xuất</button>
           </div>
         </div>
@@ -59,9 +59,9 @@ export default {
     ...mapActions('country', ['fetchCountry']),
     ...mapActions('user', ['logout']),
     logoutFunc(){
+      localStorage.removeItem('token');
       this.logout()
       this.$router.push('/login')
-
     },
     login(){
       this.$router.push('/login')
@@ -71,7 +71,6 @@ export default {
   created() {
     this.fetchCategory();
     this.fetchCountry();
-    // console.log(this.currentUser.user == '')
   }
 
 }

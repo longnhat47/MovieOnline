@@ -8,7 +8,7 @@ from rest_framework.generics import (
     UpdateAPIView)
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from .models import User
 from .serializers import *
@@ -17,6 +17,7 @@ from .tokens import create_jwt
 # Create your views here.
 class UserLoginView(CreateAPIView):
     serializer_class = UserLoginSerializer
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         password = request.data.get('password')

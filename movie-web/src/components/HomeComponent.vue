@@ -10,14 +10,13 @@
         </div>
         <div class="row mb-4" >
           <div class="col-5 movie-item movie-item-main" >
-            <!-- <router-link :to="{name: 'Movie', params: {id : hotMovie[0].id}}" class="movie-link"><img -->
             <router-link :to="'movie/'+hotMovie[0].id" class="movie-link"><img
                 :src="hotMovie[0].thumbnail" class="movie-thumbnail"
                 alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{hotMovie[0].name}}</span></router-link>
           </div>
           <div class="col-7">
             <div class="row">
-              <div class="col-4 movie-item" v-for="m in hotMovie.slice(1,7)" :key="m.id">
+              <div class="col-4 movie-item" v-for="m in listHot(hotMovie)" :key="m.id">
                 <router-link :to="'movie/'+m.id" class="movie-link"><img
                     :src="m.thumbnail"
                     class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>
@@ -36,7 +35,7 @@
           </div>
         </div>
         <div class="row sub-show">
-          <div class="col-4 movie-item" v-for="m in movie.slice(0,9)" :key="m.id">
+          <div class="col-4 movie-item" v-for="m in movie" :key="m.id">
             <router-link :to="'movie/'+m.id"  class="movie-link"><img
                 :src="m.thumbnail"
                 class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>
@@ -57,13 +56,18 @@ export default {
   },
   computed:{
     ...mapState('movie', ['movie','hotMovie']),
+    listHot(){
+      return (o)=>{
+        return o.slice(1,7)
+      }
+    }
   },
   methods: {
     ...mapActions('movie',['fetchMovie', 'fetchMovieTopView']),
 
   },
   created(){
-    this.fetchMovieTopView();
+    this.fetchMovieTopView()
     this.fetchMovie();
   }
 

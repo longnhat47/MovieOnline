@@ -45,6 +45,7 @@ export default {
       const res = await this.loginUser(this.data)
       if (res.status == 200) {
         if (res.data.user.is_superuser) {
+          window.localStorage.setItem('token', res.data.token.access);
           alert('Chào mừng quản trị viên')
           setTimeout(() => {
             this.$router.push('/admin')

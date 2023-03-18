@@ -39,6 +39,8 @@ class UserService extends BaseService {
 
     async updateProfile(data) {
         try {
+            console.log('data service')
+            console.log(data)
             const form = new FormData()
             for(const [key, value] of Object.entries(data)) {
                 form.append(`${key}`, value)

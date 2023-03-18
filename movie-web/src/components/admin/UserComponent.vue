@@ -88,7 +88,7 @@
           </div>
           <div class="p-2">
             <label for="image" class="form-label">Image</label>
-            <input type="file" class="form-control" id="image">
+            <input ref="imageFile" type="file" class="form-control" id="image" @change="getImage">
           </div>
           <button class="col-1 btn btn-primary" @click="editModel()">Sửa</button>
         </div>
@@ -119,6 +119,7 @@ export default {
         full_name: '',
         birthday: '',
         email: '',
+        image: '',
         password: '',
         re_password: ''
       },
@@ -130,11 +131,8 @@ export default {
       }
     }
   },
-  watch: {
-    
-  },
   computed: {
-    ...mapState('user', ['user']),
+    ...mapState('user', ['users']),
 
   },
   methods: {
@@ -161,7 +159,9 @@ export default {
       }
     },
     editModal(data) {
-      this.dataModel = data;
+      for(const key of Object.keys(this.dataModel)) {
+        this.dataModel[key] = data[key];
+      }
       this.isShow = !this.isShow;
       this.button.edit = !this.button.edit;
     },
@@ -179,18 +179,23 @@ export default {
       console.log(this.data)
     },
     async editModel() {
-      if (typeof (this.dataModel.image) != 'object') {
-        delete this.dataModel.image
-      }
+      // if (this.dataModel.image == null) {
+      //   delete this.dataModel.image
+      // }
+      // const dt = JSON.stringify(this.dataModel)
+      // console.log(dt)
+      console.log('data component')
       console.log(this.dataModel)
-      const res = await this.updateUser(this.dataModel)
-      console.log(res)
+
+      await this.updateUser(this.dataModel)
+      // console.log(res)
       // var i = 0;
       // while (i < this.data.length) {
       //   if (this.data[i].id === this.dataModel.id) {
       //     for(const key of Object.keys(this.data)){
       //       this.data[i][key] = res.data[key];
       //     }
+
       //     console.log(this.data[i])
       //     console.log(this.dataModel)
       //     break;
@@ -215,6 +220,9 @@ export default {
       }
       this.isShow = !this.isShow;
       this.button.delete = !this.button.delete;
+    },
+    getImage() {
+      this.dataModel.image = this.$refs.imageFile.files[0]
     }
   },
   created() {

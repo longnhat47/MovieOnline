@@ -3,7 +3,7 @@ export default {
     state.users = data
   },
   SET_USER(state, data) {
-    state.currentUser = data
+    state.currentUser = data.user
   },
   RESET_USER(state, data) {
     state.currentUser.user = data.user
@@ -21,7 +21,6 @@ export default {
       }
   },
   LOG_OUT(state){
-    state.currentUser.user = ''
-    state.currentUser.token = ''
+    state.currentUser = ''
   }
 };

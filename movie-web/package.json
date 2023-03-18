@@ -24,6 +24,7 @@
     "vue": "^3.2.47",
     "vue-axios": "^3.5.2",
     "vue-router": "4",
+    "vue-template-compiler": "^2.7.14",
     "vuex": "^4.0.2",
     "vuex-persistedstate": "^4.1.0"
   },

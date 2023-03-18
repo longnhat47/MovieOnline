@@ -12,25 +12,35 @@ export default class Http {
     return this.init();
   }
 
-  requestHandler(request) {
-    const store = require("@/store");
+  async checkToken(token) {
+    try {
+      var res = await axios.post('http://127.0.0.1:8000/api/token/verify/', { 'token': token })
+
+    } catch (error) {
+      return error.response;
+    }
+    return res
+  }
+
+  async requestHandler(request) {
+    const store = require("../store");
     console.log('store')
     console.log(store.default.state)
-    // // const token = localStorage.getItem('token')
-    const token = store ? store.default.state.user.currentUser.token.access : null;
-    if(token){
-      request.headers["Authorization"] = `Bearer ${token}`;
+    const token = localStorage.getItem('token')
+    if (token != null) {
+      var res = await this.checkToken(token)
+      if (res.status == 401) {
+        localStorage.removeItem('token');
+        store.default.state.user.currentUser = null
+        console.log(window.location.href = '/')
+      }
+      if (res.status == 200) {
+        const authenticated = !request.url.startsWith("login");
+        if (authenticated) {
+          request.headers["Authorization"] = `Bearer ${token}`
+        }
+      }
     }
-    // const authenticated = !request.url.startsWith("login");
-
-    // if (authenticated && token) {
-    //   const { access_token } = token;
-    //   if (access_token && access_token.length !== 0) {
-
-    //     // window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-
-    //   }
-    // }
     return request;
   }
 
