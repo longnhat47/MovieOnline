@@ -23,22 +23,24 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
 export default {
   data(){
     return{
+      movie: ''
     }
   },
   computed:{
-    ...mapState('movie', ['movie','hotMovie']),
   },
   methods: {
-    ...mapActions('movie',['fetchMovie', 'fetchMovieTopView']),
 
   },
-  created(){
-    this.fetchMovieTopView();
-    this.fetchMovie();
+  async created(){
+    try {
+      const {data: movie} = await movieService.getAll()
+      this.movie = movie
+    } catch (e) {
+      this.$router.push('/404')
+    }
   }
 
 }

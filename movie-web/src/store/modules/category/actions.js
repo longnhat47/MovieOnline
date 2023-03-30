@@ -4,7 +4,6 @@ import categoryService from "@/services/category/category"
 export default {
     async fetchCategory({ commit }) {
         const res = await categoryService.getAll()
-        console.log(res)
         commit("GET_CATEGORY", res.data)
         return res.data
     },

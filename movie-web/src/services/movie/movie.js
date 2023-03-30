@@ -29,9 +29,17 @@ class movieService extends BaseService {
         }
     }
 
-    async getTopView() {
+    async getBestView() {
         try {
             return await this.request().get(`${this.entity}/best-view`)
+        } catch (e) {
+            return e.response
+        }
+    }
+
+    async getTopView() {
+        try {
+            return await this.request().get(`${this.entity}/list-best-view`)
         } catch (e) {
             return e.response
         }

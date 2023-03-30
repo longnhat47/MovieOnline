@@ -105,21 +105,24 @@
           </div>
           <div class="p-2">
             <label for="movie-name" class="form-label">Tên phim</label>
-            <input type="text" class="form-control" id="movie-name" placeholder="Tên phim" :value="dataModel.name">
+            <input type="text" class="form-control" id="movie-name" placeholder="Tên phim" :value="dataModel.name"
+              @change="dataModel.name = $event.target.value">
           </div>
           <div class="p-2">
             <label for="movie-description" class="form-label">Mô tả</label>
             <input type="text" class="form-control" id="movie-description" placeholder="Mô tả"
-              :value="dataModel.description">
+              :value="dataModel.description" @change="dataModel.description = $event.target.value">
           </div>
           <div class="p-2">
             <label for="movie-thumbnail" class="form-label me-2">Thumbnail</label>
-            <img v-if="!dataModel.thumbnail.name" :src="dataModel.thumbnail" alt="thumbnail" class="mb-2" style="height: 50px;">
+            <img v-if="!dataModel.thumbnail.name" :src="dataModel.thumbnail" alt="thumbnail" class="mb-2"
+              style="height: 50px;">
             <input ref="thumbnailFile" type="file" class="form-control" id="movie-thumbnail" @change="getThumbnail">
           </div>
           <div class="p-2">
             <label for="movie-video" class="form-label me-2">Video</label>
-            <video v-if="!dataModel.video.name" :src="dataModel.video" alt="video" class="mb-2" style="height: 120px;"></video>
+            <video v-if="!dataModel.video.name" :src="dataModel.video" alt="video" class="mb-2"
+              style="height: 120px;"></video>
             <input ref="videoFile" type="file" class="form-control" id="movie-video" placeholder="Tên danh mục"
               @change="getVideo">
           </div>
@@ -147,10 +150,14 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import categoryService from '@/services/category/category'
+import countryService from '@/services/country/country'
+import movieService from '@/services/movie/movie'
 export default {
   data() {
     return {
+      category: null,
+      country: null,
       data: null,
       dataModel: {
         id: '',
@@ -171,37 +178,34 @@ export default {
     }
   },
   computed: {
-    ...mapState('movie', ['movie']),
-    ...mapState('category', ['category']),
-    ...mapState('country', ['country']),
     nameCategory() {
       return (id) => {
         var name = ''
-        this.category.forEach((o) => {
-          if (o.id == id) {
-            name = o.name
-          }
-        })
+        if (this.category) {
+          this.category.forEach((o) => {
+            if (o.id == id) {
+              name = o.name
+            }
+          })
+        }
         return name
       }
     },
     nameCountry() {
       return (id) => {
         var name = ''
-        this.country.forEach((o) => {
-          if (o.id == id) {
-            name = o.name
-          }
-        })
+        if (this.country) {
+          this.country.forEach((o) => {
+            if (o.id == id) {
+              name = o.name
+            }
+          })
+        }
         return name
       }
     }
   },
   methods: {
-    ...mapActions('movie', ['fetchMovieAdmin', 'createMovie', 'updateMovie', 'deleteMovie']),
-    ...mapActions('category', ['ferchCategory']),
-    ...mapActions('country', ['ferchCountry']),
-
     modalEvent(str) {
       switch (str) {
         case 'add':
@@ -219,11 +223,12 @@ export default {
       }
     },
     hideModal(event) {
-      if(event.target.id=='modal'){
+      if (event.target.id == 'modal') {
         this.$refs.modal.style.display = 'none'
       }
     },
     editModal(data) {
+      console.log(data)
       this.dataModel = data;
       this.isShow = !this.isShow;
       this.button.edit = !this.button.edit;
@@ -235,8 +240,8 @@ export default {
       const el = this.$refs.titleDelete
       el.innerHTML = 'Bạn có muốn xóa quốc gia ' + `<h1>${data.name}</h1>`
     },
-    addModel() {
-      this.createMovie(this.dataModel)
+    async addModel() {
+      await movieService.create(this.dataModel)
       this.isShow = !this.isShow;
       this.button.add = !this.button.add;
     },
@@ -247,17 +252,17 @@ export default {
       if (typeof (this.dataModel.video) != 'object') {
         delete this.dataModel.video
       }
-      const res = await this.updateMovie(this.dataModel)
+      const res = await movieService.update(this.dataModel)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
           for (const [key] of Object.entries(this.data[i])) {
             this.data[i][key] = res.data[key];
           }
-          if(typeof(this.data[i].thumbnail) == 'undefined'){
+          if (typeof (this.data[i].thumbnail) == 'undefined') {
             this.data[i].thumbnail = res.data.thumbnail
           }
-          if(typeof(this.data[i].video) == 'undefined'){
+          if (typeof (this.data[i].video) == 'undefined') {
             this.data[i].video = res.data.video
           }
           break;
@@ -269,7 +274,7 @@ export default {
       this.button.edit = !this.button.edit;
     },
     removeModel() {
-      this.deleteMovie(this.dataModel)
+      movieService.delete(this.dataModel.id)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
@@ -283,18 +288,18 @@ export default {
       this.isShow = !this.isShow;
       this.button.delete = !this.button.delete;
     },
-    getThumbnail() {
-      this.dataModel.thumbnail = this.$refs.thumbnailFile.files[0]
+    getThumbnail(e) {
+      this.dataModel.thumbnail = e.target.files[0]
     },
-    getVideo() {
-      this.dataModel.video = this.$refs.videoFile.files[0]
-      console.log(this.dataModel)
+    getVideo(e) {
+      this.dataModel.video = e.target.files[0]
     }
   },
-  created() {
-    this.fetchMovieAdmin().then((o) => this.data = o);
-    this.ferchCategory();
-    this.ferchCountry();
+  async created() {
+    const res = await Promise.all([categoryService.getAll(), countryService.getAll(), movieService.getAllAdmin()])
+    this.category = res[0].data
+    this.country = res[1].data
+    this.data = res[2].data
   }
 
 }
@@ -350,5 +355,4 @@ export default {
     }
   }
 
-}
-</style>
+}</style>

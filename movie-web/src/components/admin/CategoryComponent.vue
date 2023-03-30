@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import categoryService from '@/services/category/category'
 export default {
   data() {
     return {
@@ -84,15 +84,7 @@ export default {
       }
     }
   },
-  components: {
-
-  },
-  computed: {
-    ...mapState('category', ['category']),
-
-  },
   methods: {
-    ...mapActions('category', ['fetchCategory', 'createCategory', 'updateCategory', 'deleteCategory']),
     modalEvent(str) {
       switch (str) {
         case 'add':
@@ -129,14 +121,15 @@ export default {
       const el = this.$refs.titleDelete
       el.innerHTML = 'Bạn có muốn xóa danh mục ' + `<h1>${data.name}</h1>`
     },
-    addModel() {
-      this.createCategory(this.dataModel)
+    async addModel() {
+      const res = await categoryService.create(this.dataModel)
+      console.log(res)
+      this.data.unshift(res.data)
       this.isShow = !this.isShow;
       this.button.add = !this.button.add;
-      console.log(this.data)
     },
-    editModel() {
-      this.updateCategory(this.dataModel)
+    async editModel() {
+      await categoryService.update(this.dataModel)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
@@ -150,8 +143,8 @@ export default {
       this.isShow = !this.isShow;
       this.button.edit = !this.button.edit;
     },
-    removeModel() {
-      this.deleteCategory(this.dataModel)
+    async removeModel() {
+      await categoryService.delete(this.dataModel.id)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
@@ -166,8 +159,9 @@ export default {
       this.button.delete = !this.button.delete;
     }
   },
-  created() {
-    this.fetchCategory().then((o) => this.data = o);
+  async created() {
+    const res = await categoryService.getAll()
+    this.data = res.data
   }
 
 }

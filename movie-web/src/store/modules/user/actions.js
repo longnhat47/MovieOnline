@@ -21,24 +21,28 @@ export default {
     commit("LOG_OUT")
     return 0
   },
-  async updateUser(data){
-    console.log('data action')
-    console.log(data)
+  async updateProfile({ commit }, data){
     const res = await userService.updateProfile(data)
+    console.log(res)
+    commit("UPDATE_PROFILE", res.data)
     return res
   },
-  /* eslint-disable */
-  async updatePassword({ commit }, data){
+  async updateUser({ commit },data){
+    console.log('data action')
+    console.log(data)
+    const res = await userService.updateUser(data)
+    return res
+  },
+  async updatePassword({ commit },data){
+    console.log('data action')
     console.log(data)
     const res = await userService.updatePassword(data)
-    // commit("RESET_USER")
     return res.data
   },
   resetProfile({ commit }) {
     commit("RESET_USER")
     return 0
   },
-  /* eslint-disable */
   async deleteUser({ commit }, data){
     const res = await userService.delete(data.id)
     commit("DELETE_USER", res.data)

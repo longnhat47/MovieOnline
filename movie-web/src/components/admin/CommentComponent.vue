@@ -3,7 +3,6 @@
     <div class="container">
       <div class="row">
         <h3 class="col-3">Comment</h3>
-        <button class="btn btn-success col-1" @click="modalEvent('add')">Thêm mới</button>
       </div>
       <table class="table text-light">
         <thead>
@@ -31,27 +30,6 @@
 
       <!-- Modal -->
       <div ref="modal" id="modal" class="modal" v-show="isShow" @click="hideModal">
-        <!-- Add -->
-        <div class="modal-content" v-show="button.add">
-          <div class="row justify-content-end">
-            <button class="btn-close me-3" @click="modalEvent('add')"></button>
-          </div>
-          <div class="p-2">
-            <label for="comment-movie" class="form-label">Phim</label>
-            <select class="form-select" @change="dataModel.movie = $event.target.value" id="comment-movie"
-              aria-label="Default select example"
-              v-model="dataModel.movie">
-              <option v-for="m in movie" :key="m.id" :value="m.id">
-                {{ m.name }}
-              </option>
-            </select>
-          </div>
-          <div class="p-2">
-            <label for="name" class="form-label">Nội dung</label>
-            <input type="text" class="form-control" id="name" placeholder="Nội dung" v-model="dataModel.content">
-          </div>
-          <button class="col-1 btn btn-success" @click="addModel">Thêm</button>
-        </div>
         <!-- Edit -->
         <div class="modal-content" v-show="button.edit">
           <div class="row justify-content-end">
@@ -90,7 +68,8 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import commentService from '@/services/comment/comment'
+import movieService from '@/services/movie/movie'
 export default {
   data() {
     return {
@@ -103,39 +82,33 @@ export default {
       },
       isShow: false,
       button: {
-        add: false,
         edit: false,
         delete: false,
-      }
+      },
+      movie: null
     }
   },
   components: {
 
   },
   computed: {
-    ...mapState('comment', ['comment']),
-    ...mapState('movie', ['movie']),
     nameMovie() {
       return (id) => {
         var name = ''
-        this.movie.forEach((o) => {
-          if (o.id == id) {
-            name = o.name
-          }
-        })
+        if (this.movie) {
+          this.movie.forEach((o) => {
+            if (o.id == id) {
+              name = o.name
+            }
+          })
+        }
         return name
       }
     }
   },
   methods: {
-    ...mapActions('comment', ['fetchComment', 'createComment', 'updateComment', 'deleteComment']),
-    ...mapActions('movie', ['fetchMovie']),
     modalEvent(str) {
       switch (str) {
-        case 'add':
-          this.isShow = !this.isShow;
-          this.button.add = !this.button.add;
-          break;
         case 'edit':
           this.isShow = !this.isShow;
           this.button.edit = !this.button.edit;
@@ -152,11 +125,8 @@ export default {
       }
     },
     editModal(data) {
-      // this.dataModel.id = data.id;
-      // this.dataModel.movie = data.movie;
-      // this.dataModel.content = data.content;
-      for(const [key] of Object.entries(this.dataModel)){
-            this.dataModel[key] = data[key];
+      for (const [key] of Object.entries(this.dataModel)) {
+        this.dataModel[key] = data[key];
       }
       this.isShow = !this.isShow;
       this.button.edit = !this.button.edit;
@@ -166,22 +136,15 @@ export default {
       this.isShow = !this.isShow;
       this.button.delete = !this.button.delete;
       const el = this.$refs.titleDelete
-      el.innerHTML = `Bạn có muốn xóa bình luận của ${data.user.email}`+ `<hr><span>Nội dung</span><h1>${data.content}</h1>`
-    },
-    addModel() {
-      this.createComment(this.dataModel)
-      this.isShow = !this.isShow;
-      this.button.add = !this.button.add;
-      console.log(this.data)
+      el.innerHTML = `Bạn có muốn xóa bình luận của ${data.user.email}` + `<hr><span>Nội dung</span><h1>${data.content}</h1>`
     },
     async editModel() {
-      console.log(this.dataModel)
-      const res = await this.updateComment(this.dataModel)
+      const res = await commentService.update(this.dataModel)
       console.log(res.data)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
-          for(const [key] of Object.entries(this.data[i])){
+          for (const [key] of Object.entries(this.data[i])) {
             this.data[i][key] = this.dataModel[key];
           }
           break;
@@ -193,11 +156,10 @@ export default {
       this.button.edit = !this.button.edit;
     },
     removeModel() {
-      this.deleteComment(this.dataModel)
+      commentService.delete(this.dataModel.id)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
-          console.log(this.data[i]);
           this.data.splice(i, 1);
           break;
         } else {
@@ -208,8 +170,10 @@ export default {
       this.button.delete = !this.button.delete;
     }
   },
-  created() {
-    this.fetchComment().then((o) => this.data = o);
+  async created() {
+    const res = await Promise.all([commentService.getAll(), movieService.getAll()]) 
+    this.data = res[0].data
+    this.movie = res[1].data
   }
 
 }

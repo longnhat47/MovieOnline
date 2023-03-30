@@ -2,7 +2,7 @@ from rest_framework import status, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import (
-    RetrieveAPIView, 
+    RetrieveAPIView,
     ListAPIView,
     CreateAPIView,
     UpdateAPIView,
@@ -10,7 +10,7 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView)
 from rest_framework.permissions import(
     IsAuthenticated,
-    IsAdminUser, 
+    IsAdminUser,
     IsAuthenticatedOrReadOnly,
 )
 
@@ -20,16 +20,20 @@ from .serializers import *
 
 s1 = u'ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ'
 s0 = u'AAAAEEEIIOOOOUUYaaaaeeeiioooouuyAaDdIiUuOoUuAaAaAaAaAaAaAaAaAaAaAaAaEeEeEeEeEeEeEeEeIiIiOoOoOoOoOoOoOoOoOoOoOoOoUuUuUuUuUuUuUuYyYyYyYy'
+
+
 def remove_accents(input_str):
-	s = ''
-	for c in input_str:
-		if c in s1:
-			s += s0[s1.index(c)]
-		else:
-			s += c
-	return s
+    s = ''
+    for c in input_str:
+        if c in s1:
+            s += s0[s1.index(c)]
+        else:
+            s += c
+    return s
 
 # CATEGORY VIEWS----------------------------------------------------------------
+
+
 class CreateCategoryView(CreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -39,7 +43,6 @@ class CreateCategoryView(CreateAPIView):
 class ListCategoryView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-
 
 
 class CategoryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
@@ -84,7 +87,7 @@ class CountryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 
 
 class ListMovieView(ListAPIView):
-    queryset = Movie.objects.all().filter(status = True)
+    queryset = Movie.objects.all().filter(status=True)
     serializer_class = MovieSerializer
 
 
@@ -109,16 +112,21 @@ class CreateMovieView(APIView):
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class MovieRetrieveView(RetrieveAPIView):
-    queryset = Movie.objects.all().filter(status = True)
+    queryset = Movie.objects.all().filter(status=True)
     serializer_class = MovieDetailSerializer
     lookup_field = 'id'
-    
+
 
 class MovieBestView(ListAPIView):
-    queryset = Movie.objects.all().filter(status = True).order_by('-views')[0:7]
+    queryset = Movie.objects.all().filter(status=True).order_by('-views')[0:1]
+    serializer_class = MovieSerializer
+
+
+class BestListMovieView(ListAPIView):
+    queryset = Movie.objects.all().filter(status=True).order_by('-views')[1:8]
     serializer_class = MovieSerializer
 
 
@@ -135,18 +143,18 @@ class MovieUpdateView(UpdateAPIView):
     lookup_field = 'id'
 
     def get_queryset(self):
-       data = Movie.objects.all()
-       return data
-    
+        data = Movie.objects.all()
+        return data
+
     def update(self, request, *args, **kwargs):
         movie = self.get_object()
         print(movie.id)
-        movie.views +=1
+        movie.views += 1
         movie.save()
-        return Response('Update successful', status= status.HTTP_200_OK)
+        return Response('Update successful', status=status.HTTP_200_OK)
 
 
-#COMMENT VIEWS----------------------------------------------------------------
+# COMMENT VIEWS----------------------------------------------------------------
 class CommentListView(ListAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -159,8 +167,9 @@ class CommentCreateView(CreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        serializer.save(user = user)
+        serializer.save(user=user)
         return super().perform_create(serializer)
+
 
 class CommentDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()

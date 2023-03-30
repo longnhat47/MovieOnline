@@ -37,10 +37,16 @@ class UserService extends BaseService {
         }
     }
 
+    async deleteAdmin(id) {
+        try {
+            return await this.request().delete(`${this.entity}/${id}/admin`)
+        } catch (e) {
+            return e.response
+        }
+    }
+
     async updateProfile(data) {
         try {
-            console.log('data service')
-            console.log(data)
             const form = new FormData()
             for(const [key, value] of Object.entries(data)) {
                 form.append(`${key}`, value)
@@ -55,9 +61,25 @@ class UserService extends BaseService {
         }
     }
 
+    async updateUser(data) {
+        try {
+            const form = new FormData()
+            for(const [key, value] of Object.entries(data)) {
+                form.append(`${key}`, value)
+            }
+            return await this.request().patch(`${this.entity}/${data['id']}/admin`, form, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+        } catch (e) {
+            return e.response
+        }
+    }
+
     async updatePassword(data) {
         try {
-            return await this.request().put(`${this.entity}/change-password/?id=${data.id}`, data)
+            return await this.request().post(`${this.entity}/change-password/${data.id}`, data)
         } catch (e) {
             return e.response
         }

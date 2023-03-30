@@ -8,9 +8,9 @@
         <div class="review-form">
           <p>Bình luận</p>
           <div class="form-floating">
-            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
-              style="height: 100px" v-model="comment"></textarea>
-            <label for="floatingTextarea2">Comments</label>
+            <textarea ref="commentArea" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"
+              v-model="comment"></textarea>
+            <label  for="floatingTextarea2">Comments</label>
           </div>
           <button class="btn btn-primary mt-2" @click="commentFunc">Bình luận</button>
         </div>
@@ -38,7 +38,8 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import movieService from '@/services/movie/movie'
+import commentService from '@/services/comment/comment'
 import moment from 'moment'
 import API_MEDIA from '../../env'
 
@@ -47,35 +48,39 @@ export default {
     return {
       img: API_MEDIA,
       title: '',
+      movie: '',
       comment: ''
     }
   },
   computed: {
-    ...mapState('movie', ['movie']),
-    ...mapState('user', ['currentUser']),
   },
   methods: {
-    ...mapActions('movie', ['fetchMovieDetail', 'updateViewMovie']),
-    ...mapActions('comment', ['createComment']),
     formatDate(value) {
       if (value) {
         return moment(String(value)).format('MM/DD/YYYY hh:mm')
       }
       return 'NAN'
     },
-    commentFunc(){
-      if(this.currentUser.token){
-        this.createComment({movie: this.$route.params.id, content: this.comment})
-        this.$router.go(this.$router.currentRoute)
-      }else{
+    async commentFunc() {
+      if (localStorage.getItem('token') != null) {
+        await commentService.create({ movie: this.$route.params.id, content: this.comment })
+        const update = await await movieService.get(this.$route.params.id)
+        this.movie.comment = update.data.comment
+        this.comment = ''
+      } else {
         this.$router.push('/login')
       }
     }
   },
-  created() {
-    this.fetchMovieDetail(this.$route.params.id).then((o) => {
-      this.title = o.category.name+'>'+ o.name
-    }).finally(() => this.updateViewMovie(this.$route.params.id))
+  async created() {
+    try {
+      const {data: movie} = await movieService.get(this.$route.params.id)
+      this.title = movie.category.name + '>' + movie.name
+      this.movie = movie
+      await movieService.updateView(this.$route.params.id)
+    } catch (e) {
+      this.$router.push('/404')
+    }
 
   }
 
@@ -97,10 +102,11 @@ export default {
 
   .review {
     .review-item {
-      .user-img-comment{
+      .user-img-comment {
         width: 100%;
         min-height: 50%;
       }
+
       .user-name-comment {
         display: block;
         padding-left: 0;
@@ -113,4 +119,5 @@ export default {
       }
     }
   }
-}</style>
+}
+</style>

@@ -3,11 +3,11 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container">
         <router-link class="navbar-brand" to="/">Phim</router-link>
-        <button class="navbar-toggler btn" type="button">
+        <button class="navbar-toggler btn" type="button" @click="this.open = !this.open">
           Menu
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" :style="{ display: open ? 'block' : 'none' }">
+          <ul class="navbar-nav mb-2 mb-lg-0 me-auto">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button">
                 Thể loại
@@ -25,16 +25,22 @@
               </ul>
             </li>
           </ul>
+          
+          <button type="button" class="btn btn-outline-light btn-sm" v-if="currentUser == null" @click="login">Đăng
+            nhập</button>
 
-          <form class="d-flex me-auto" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-secondary" type="submit">Tìm</button>
-          </form>
-          <button type="button" class="btn btn-outline-light btn-sm" v-if="currentUser == null" @click="login">Đăng nhập</button>
-          <div class="d-flex" v-else>
-            <p class="text-white mb-0" v-if="currentUser.full_name">{{ currentUser.full_name}}</p>
-            <button type="button" class="btn btn-outline-light btn-sm ms-4" @click="logoutFunc">Đăng xuất</button>
-          </div>
+          <ul class="navbar-nav mb-2 mb-lg-0" v-else>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" v-if="currentUser.full_name">
+                {{ currentUser.full_name }}
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/update-profile">Cập nhật thông tin</a></li>
+                <li><a class="dropdown-item" href="/change-password">Đổi mật khẩu</a></li>
+                <li><a class="dropdown-item" @click="logoutFunc" href="#">Đăng xuất</a></li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -42,35 +48,37 @@
 </template>
 
 <script>
+import categoryService from '@/services/category/category'
+import countryService from '@/services/country/country'
 import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
-      userInfo: null
+      userInfo: null,
+      category: null,
+      country: null,
+      open: false
     }
   },
   computed: {
-    ...mapState('category', ['category']),
-    ...mapState('country', ['country']),
     ...mapState('user', ['currentUser']),
   },
   methods: {
-    ...mapActions('category', ['fetchCategory']),
-    ...mapActions('country', ['fetchCountry']),
     ...mapActions('user', ['logout']),
-    logoutFunc(){
+    logoutFunc() {
       localStorage.removeItem('token');
       this.logout()
       this.$router.push('/login')
     },
-    login(){
+    login() {
       this.$router.push('/login')
     }
 
   },
-  created() {
-    this.fetchCategory();
-    this.fetchCountry();
+  async created() {
+    const res = await Promise.all([categoryService.getAll(), countryService.getAll()])
+    this.category = res[0].data
+    this.country = res[1].data
   }
 
 }
@@ -90,6 +98,10 @@ export default {
 
   .navbar-toggler {
     padding: 12px;
+
+    .open {
+      display: block;
+    }
   }
 
   .navbar-toggler:focus .collapse.navbar-collapse {

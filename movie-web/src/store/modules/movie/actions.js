@@ -34,14 +34,12 @@ export default {
         commit("PUT_MOVIE", res.data)
         return res
     },
-    /* eslint-disable */
     async updateViewMovie({ commit }, data) {
         const res = await movieService.updateView(data)
         // commit("PUT_MOVIE", res.data)
         console.log(res)
         return res
     },
-    /* eslint-disable */
     async deleteMovie({ commit }, data) {
         const res = await movieService.delete(data.id)
         // commit("DELETE_MOVIE", data)

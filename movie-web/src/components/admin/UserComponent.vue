@@ -27,7 +27,7 @@
               <img :src="d.image" alt="image" style="height: 50px;">
             </td>
             <td class="col-1">
-              <input type="checkbox" name="status" id="user-status" class="form-check-input" :checked="d.is_active">
+              <input type="checkbox" name="status" id="user-status" class="form-check-input" :checked="d.is_active" disabled>
             </td>
             <td class="col-2 d-flex justify-content-end">
               <button class="btn btn-secondary" @click="editModal(d)">Sửa</button>
@@ -90,6 +90,10 @@
             <label for="image" class="form-label">Image</label>
             <input ref="imageFile" type="file" class="form-control" id="image" @change="getImage">
           </div>
+          <div class="p-2">
+            <label for="active" class="form-label">Active</label>
+            <input type="checkbox" class="form-check-input" id="active" :checked="dataModel.is_active" @change="dataModel.is_active = $event.target.checked">
+          </div>
           <button class="col-1 btn btn-primary" @click="editModel()">Sửa</button>
         </div>
         <!-- Delete -->
@@ -109,7 +113,8 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import userService from '@/services/user/user'
+// import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -120,8 +125,7 @@ export default {
         birthday: '',
         email: '',
         image: '',
-        password: '',
-        re_password: ''
+        is_active: ''
       },
       isShow: false,
       button: {
@@ -132,11 +136,11 @@ export default {
     }
   },
   computed: {
-    ...mapState('user', ['users']),
+    // ...mapState('user', ['users']),
 
   },
   methods: {
-    ...mapActions('user', ['fetchUser', 'createUser', 'updateUser', 'deleteUser']),
+    // ...mapActions('user', ['fetchUser', 'createUser', 'updateUser', 'deleteUser']),
     modalEvent(str) {
       switch (str) {
         case 'add':
@@ -179,35 +183,29 @@ export default {
       console.log(this.data)
     },
     async editModel() {
-      // if (this.dataModel.image == null) {
-      //   delete this.dataModel.image
-      // }
-      // const dt = JSON.stringify(this.dataModel)
-      // console.log(dt)
-      console.log('data component')
-      console.log(this.dataModel)
-
-      await this.updateUser(this.dataModel)
-      // console.log(res)
-      // var i = 0;
-      // while (i < this.data.length) {
-      //   if (this.data[i].id === this.dataModel.id) {
-      //     for(const key of Object.keys(this.data)){
-      //       this.data[i][key] = res.data[key];
-      //     }
-
-      //     console.log(this.data[i])
-      //     console.log(this.dataModel)
-      //     break;
-      //   } else {
-      //     ++i;
-      //   }
-      // }
+      if (this.dataModel.image == null || this.dataModel.image.name == null) {
+        delete this.dataModel.image
+      }
+      const res = await userService.updateUser(this.dataModel)
+      var i = 0;
+      while (i < this.data.length) {
+        if (this.data[i].id === this.dataModel.id) {
+          for (const [key] of Object.entries(this.data[i])) {
+            this.data[i][key] = res.data[key];
+          }
+          if (typeof (this.data[i].image) == 'undefined') {
+            this.data[i].image = res.data.image
+          }
+          break;
+        } else {
+          ++i;
+        }
+      }
       this.isShow = !this.isShow;
       this.button.edit = !this.button.edit;
     },
-    removeModel() {
-      this.deleteUser(this.dataModel)
+    async removeModel() {
+      await userService.deleteAdmin(this.dataModel.id)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
@@ -225,8 +223,9 @@ export default {
       this.dataModel.image = this.$refs.imageFile.files[0]
     }
   },
-  created() {
-    this.fetchUser().then((o) => this.data = o);
+  async created() {
+    const res = await userService.getUsers()
+    this.data = res.data
   }
 
 }

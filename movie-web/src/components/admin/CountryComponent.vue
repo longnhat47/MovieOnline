@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import countryService from '@/services/country/country'
 export default {
   data() {
     return {
@@ -84,15 +84,7 @@ export default {
       }
     }
   },
-  components: {
-
-  },
-  computed: {
-    ...mapState('country', ['country']),
-
-  },
   methods: {
-    ...mapActions('country', ['fetchCountry', 'createCountry', 'updateCountry', 'deleteCountry']),
     modalEvent(str) {
       switch (str) {
         case 'add':
@@ -129,14 +121,14 @@ export default {
       const el = this.$refs.titleDelete
       el.innerHTML = 'Bạn có muốn xóa quốc gia ' + `<h1>${data.name}</h1>`
     },
-    addModel() {
-      this.createCountry(this.dataModel)
+    async addModel() {
+      const res = await countryService.create(this.dataModel)
+      this.data.unshift(res.data)
       this.isShow = !this.isShow;
       this.button.add = !this.button.add;
-      console.log(this.data)
     },
-    editModel() {
-      this.updateCountry(this.dataModel)
+    async editModel() {
+      await countryService.update(this.dataModel)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
@@ -149,8 +141,8 @@ export default {
       this.isShow = !this.isShow;
       this.button.edit = !this.button.edit;
     },
-    removeModel() {
-      this.deleteCountry(this.dataModel)
+    async removeModel() {
+      await countryService.delete(this.dataModel.id)
       var i = 0;
       while (i < this.data.length) {
         if (this.data[i].id === this.dataModel.id) {
@@ -165,8 +157,9 @@ export default {
       this.button.delete = !this.button.delete;
     }
   },
-  created() {
-    this.fetchCountry().then((o) => this.data = o);
+  async created() {
+    const res = await countryService.getAll();
+    this.data = res.data;
   }
 
 }

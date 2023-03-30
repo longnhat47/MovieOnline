@@ -1,3 +1,5 @@
+from attr import field
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import User
 
@@ -59,17 +61,18 @@ class UserCommentSerializer(ModelSerializer):
 class UpdateUserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'image', 'birthday']
-        # extra_kwargs = {
-        #     'email': {'read_only': True}
-        # }
+        fields = ['id', 'full_name', 'image', 'birthday']
+        
+
+# Update User for Admin
+class AdminUpdateUserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'full_name', 'image', 'birthday', 'is_active']
 
 
 # Update User Password
 class UpdatePasswordUserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'password']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        fields = ['password']

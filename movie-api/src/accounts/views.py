@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
 
+
 from rest_framework.generics import (
     ListAPIView, 
     RetrieveUpdateDestroyAPIView,
@@ -13,6 +14,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from .models import User
 from .serializers import *
 from .tokens import create_jwt
+from .permissions import IsCurrentUser
 
 # Create your views here.
 class UserLoginView(CreateAPIView):
@@ -68,12 +70,39 @@ class UserCreateView(CreateAPIView):
 class UserDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UpdateUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCurrentUser]
 
     lookup_field = 'id'
 
-class UserUpdatePasswordView(UpdateAPIView):
+
+class UserDetailUpdateDeleteAdminView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
-    serializer_class = UpdatePasswordUserSerializer
+    serializer_class = AdminUpdateUserSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     lookup_field = 'id'
+
+
+# class UserUpdatePasswordView(UpdateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UpdatePasswordUserSerializer
+#     permission_classes = [IsAuthenticated, IsCurrentUser]
+#     lookup_field = 'id'
+
+class UserUpdatePasswordView(CreateAPIView):
+    serializer_class = UpdatePasswordUserSerializer
+    lookup_field = 'id'
+    permission_classes = [IsAuthenticated, IsCurrentUser]
+
+    
+    def post(self, request, *args, **kwargs):
+        id = kwargs['id']
+        u = User.objects.get(id = id)
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        if u.check_password(old_password):
+            u.set_password(new_password)
+            u.save()
+            return Response("Update password successful", status=status.HTTP_200_OK)
+        else:
+            return Response("Old password is invalid", status=status.HTTP_400_BAD_REQUEST)

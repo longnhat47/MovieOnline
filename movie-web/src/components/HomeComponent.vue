@@ -2,24 +2,21 @@
   <div class="home">
     <div class="container">
       <div class="row main-show">
-        <div class="row mb-2">
-          <h3 class="col-10">Phim hot</h3>
-          <div class="col-2 text-end">
-            <a href="#" class="btn btn-secondary btn-sm show-more-btn">Xem tất cả</a>
-          </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <h3 class="">Phim hot</h3>
+            <a href="#" class="flex-end btn btn-secondary show-more-btn">Xem tất cả</a>
         </div>
-        <div class="row mb-4" >
-          <div class="col-5 movie-item movie-item-main" >
-            <router-link :to="'movie/'+hotMovie[0].id" class="movie-link"><img
-                :src="hotMovie[0].thumbnail" class="movie-thumbnail"
-                alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{hotMovie[0].name}}</span></router-link>
+        <div class="row mb-4">
+          <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 movie-item movie-item-main">
+            <router-link :to="'movie/' + bestView.id" class="movie-link"><img :src="bestView.thumbnail"
+                class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{
+                  bestView.name }}</span></router-link>
           </div>
-          <div class="col-7">
+          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12">
             <div class="row">
-              <div class="col-4 movie-item" v-for="m in listHot(hotMovie)" :key="m.id">
-                <router-link :to="'movie/'+m.id" class="movie-link"><img
-                    :src="m.thumbnail"
-                    class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 movie-item" v-for="m in listHot(hotMovie)" :key="m.id">
+                <router-link :to="'movie/' + m.id" class="movie-link"><img :src="m.thumbnail" class="movie-thumbnail"
+                    alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{ m.name }}</span></router-link>
               </div>
             </div>
           </div>
@@ -28,17 +25,14 @@
       </div>
 
       <div class="row">
-        <div class="row mb-2">
-          <h3 class="col-10">Phim</h3>
-          <div class="col-2 text-end">
-            <a href="#" class="btn btn-secondary btn-sm show-more-btn">Xem tất cả</a>
-          </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <h3>Phim</h3>
+          <a href="#" class="btn btn-secondary show-more-btn">Xem tất cả</a>
         </div>
         <div class="row sub-show">
-          <div class="col-4 movie-item" v-for="m in movie" :key="m.id">
-            <router-link :to="'movie/'+m.id"  class="movie-link"><img
-                :src="m.thumbnail"
-                class="movie-thumbnail" alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{m.name}}</span></router-link>
+          <div class="col-xl-4 col-lg-4 col-md-6 movie-item" v-for="m in movie" :key="m.id">
+            <router-link :to="'movie/' + m.id" class="movie-link"><img :src="m.thumbnail" class="movie-thumbnail"
+                alt="thumbnail"><i class="icon-play"></i><span class="movie-name">{{ m.name }}</span></router-link>
           </div>
         </div>
       </div>
@@ -48,27 +42,30 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import movieService from '@/services/movie/movie'
 export default {
-  data(){
-    return{
+  data() {
+    return {
+      bestView: '',
+      movie: '',
+      hotMovie: '',
     }
   },
-  computed:{
-    ...mapState('movie', ['movie','hotMovie']),
-    listHot(){
-      return (o)=>{
-        return o.slice(1,7)
+  computed: {
+    listHot() {
+      return (o) => {
+        return o.slice(1, 7)
       }
     }
   },
   methods: {
-    ...mapActions('movie',['fetchMovie', 'fetchMovieTopView']),
 
   },
-  created(){
-    this.fetchMovieTopView()
-    this.fetchMovie();
+  async created() {
+    const res = await Promise.all([movieService.getAll(), movieService.getTopView(), movieService.getBestView()])
+    this.movie = res[0].data
+    this.hotMovie = res[1].data
+    this.bestView = res[2].data[0]
   }
 
 }
@@ -135,6 +132,9 @@ a {
         min-height: 28px;
         font-size: 12px;
         width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis
       }
     }
   }

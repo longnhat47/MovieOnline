@@ -51,6 +51,7 @@ export default {
             this.$router.push('/admin')
           }, 1300)
         }else{
+          window.localStorage.setItem('token', res.data.token.access);
           alert('Đăng nhập thành công')
         setTimeout(() => {
           this.$router.push('/')
