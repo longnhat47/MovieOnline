@@ -36,7 +36,7 @@ def remove_accents(input_str):
 
 class CreateCategoryView(CreateAPIView):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = CategoryCreateSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
 
@@ -47,10 +47,10 @@ class ListCategoryView(ListAPIView):
 
 class CategoryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = CategoryCreateSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
-    lookup_field = 'id'
+    lookup_field = 'slug'
 
 
 # COUNTRY VIEWS----------------------------------------------------------------
@@ -61,16 +61,16 @@ class ListCountryView(ListAPIView):
 
 class CreateCountryView(CreateAPIView):
     queryset = Country.objects.all()
-    serializer_class = CountrySerializer
+    serializer_class = CountryCreateSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
 
 class CountryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Country.objects.all()
-    serializer_class = CountrySerializer
+    serializer_class = CountryCreateSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
-    lookup_field = 'id'
+    lookup_field = 'slug'
 
 
 # MOVIE VIEWS----------------------------------------------------------------
@@ -117,7 +117,7 @@ class CreateMovieView(APIView):
 class MovieRetrieveView(RetrieveAPIView):
     queryset = Movie.objects.all().filter(status=True)
     serializer_class = MovieDetailSerializer
-    lookup_field = 'id'
+    lookup_field = 'slug'
 
 
 class MovieBestView(ListAPIView):
@@ -133,14 +133,14 @@ class BestListMovieView(ListAPIView):
 class MovieUpdateDeleteView(UpdateAPIView, DestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailAdminSerializer
-    lookup_field = 'id'
+    lookup_field = 'slug'
     permission_classes = [IsAuthenticated, IsAdminUser]
 
 
 class MovieUpdateView(UpdateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieUpdateViewSerializer
-    lookup_field = 'id'
+    lookup_field = 'slug'
 
     def get_queryset(self):
         data = Movie.objects.all()
@@ -148,7 +148,6 @@ class MovieUpdateView(UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         movie = self.get_object()
-        print(movie.id)
         movie.views += 1
         movie.save()
         return Response('Update successful', status=status.HTTP_200_OK)
