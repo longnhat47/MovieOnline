@@ -50,7 +50,7 @@ class CategoryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     serializer_class = CategoryCreateSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
-    lookup_field = 'slug'
+    lookup_field = 'id'
 
 
 # COUNTRY VIEWS----------------------------------------------------------------
@@ -70,7 +70,7 @@ class CountryRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     serializer_class = CountryCreateSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
-    lookup_field = 'slug'
+    lookup_field = 'id'
 
 
 # MOVIE VIEWS----------------------------------------------------------------
@@ -133,14 +133,14 @@ class BestListMovieView(ListAPIView):
 class MovieUpdateDeleteView(UpdateAPIView, DestroyAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieDetailAdminSerializer
-    lookup_field = 'slug'
+    lookup_field = 'id'
     permission_classes = [IsAuthenticated, IsAdminUser]
 
 
 class MovieUpdateView(UpdateAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieUpdateViewSerializer
-    lookup_field = 'slug'
+    lookup_field = 'id'
 
     def get_queryset(self):
         data = Movie.objects.all()
