@@ -4,29 +4,41 @@ from accounts.serializers import UserCommentSerializer
 import requests
 
 
+class CategoryCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
+
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
+        fields = ['id', 'name', 'slug']
+
+
+
+class CountryCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Country
         fields = ['id', 'name']
 
 
 class CountrySerializer(ModelSerializer):
     class Meta:
         model = Country
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'slug']
 
 
 class MovieSerializer(ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id', 'category', 'country', 'name',
+        fields = ['id', 'category', 'country', 'name', 'slug',
                   'thumbnail', 'views', 'created_at', 'status']
         
         
 class MovieUpdateViewSerializer(ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id']
+        fields = ['slug']
     
 
 class MovieCreateSerializer(ModelSerializer):
@@ -55,12 +67,26 @@ class MovieDetailSerializer(ModelSerializer):
         }
 
     def get_category(self, obj):
-        cate = Category.objects.filter(id=obj.category.id)
-        return CategorySerializer(instance=cate, many=True).data[0]
+        if(obj.category):
+            id = obj.category.id
+            if(id):
+                cate = Category.objects.filter(id=id)
+                return CategorySerializer(instance=cate, many=True).data
+            else:
+                return
+        else:
+            return
 
     def get_country(self, obj):
-        coun = Country.objects.filter(id=obj.country.id)
-        return CountrySerializer(instance=coun, many=True).data[0]
+        if(obj.country):
+            id = obj.country.id
+            if(id):
+                coun = Country.objects.filter(id=obj.country.id)
+                return CountrySerializer(instance=coun, many=True).data
+            else:
+                return
+        else:
+            return
 
     def get_comment(self, obj):
         comment = Comment.objects.filter(movie=obj.id).order_by('-created_at')
