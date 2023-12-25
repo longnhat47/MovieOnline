@@ -13,6 +13,8 @@ const themeConfig = {
       colorPrimaryActive: "#f90036",
       colorPrimaryHover: "#c51c41",
       colorTextLightSolid: "#000",
+
+      primaryColor: "#fff",
     },
     Spin: {
       colorPrimary: "#c51c41",

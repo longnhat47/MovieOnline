@@ -1,9 +1,10 @@
 import axios from "@/axios/axios";
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { CountryType } from "@/types/countryType";
+import { getAllCountry } from "./countryApi";
 
 export const fetchCountry = createAsyncThunk("country/fetchAll", async () => {
-  const response = await axios.get("/country");
+  const response = await getAllCountry();
   return await response.data;
 });
 

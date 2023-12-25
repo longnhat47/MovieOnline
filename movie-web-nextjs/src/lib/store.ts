@@ -2,12 +2,14 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import categorySlide from "@/features/category/categorySlide";
 import countrySlide from "@/features/country/countrySlide";
 import movieSlide from "@/features/movie/movieSlide";
+import userSlide from "@/features/user/userSlide";
 
 export const store = configureStore({
   reducer: combineReducers({
     category: categorySlide,
     country: countrySlide,
     movie: movieSlide,
+    user: userSlide,
   }),
 });
 

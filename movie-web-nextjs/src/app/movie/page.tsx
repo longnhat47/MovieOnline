@@ -11,6 +11,7 @@ import { fecthAllMovie } from "@/features/movie/movieSlide";
 import { AppDispatch, RootState } from "@/lib/store";
 
 import StyleLayout from "@/styles/layout.module.scss";
+import HeaderComponent from "@/components/HeaderComponent";
 
 const { Meta } = Card;
 export default function MovieComponent() {
@@ -23,6 +24,7 @@ export default function MovieComponent() {
 
   return (
     <>
+      <HeaderComponent />
       <Content>
         <Flex className={StyleLayout.lnDefaultLayout}>
           <Row className={StyleLayout.lnSection}>

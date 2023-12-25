@@ -25,10 +25,7 @@ export default function RootLayout({
       <body className={inter.className} style={{ background: "#ccc" }}>
         <StoreProvider>
           <AntdProvider>
-            <AntdRegistry>
-              <HeaderComponent />
-              {children}
-            </AntdRegistry>
+            <AntdRegistry>{children}</AntdRegistry>
           </AntdProvider>
         </StoreProvider>
       </body>

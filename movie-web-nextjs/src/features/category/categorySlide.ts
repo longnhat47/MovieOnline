@@ -2,9 +2,10 @@ import axios from "@/axios/axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { CategoryType } from "@/types/categoryType";
+import { getAllCategory } from "./categoryApi";
 
 export const fetchCategory = createAsyncThunk("category/fetchAll", async () => {
-  const response = await axios.get("/category");
+  const response = await getAllCategory();
   return await response.data;
 });
 
