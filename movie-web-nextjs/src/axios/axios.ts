@@ -1,14 +1,17 @@
 import axios from "axios";
 
-const token = localStorage.getItem("token");
-
+let token: string | null = "";
+if (typeof window !== "undefined") {
+  // Perform localStorage action
+  token = localStorage.getItem("token");
+}
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 1000,
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
 });
-if (token) {
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-}
 
 // Add a response interceptor
 axios.interceptors.response.use(
