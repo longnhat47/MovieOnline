@@ -3,39 +3,56 @@ import Link from "next/link";
 import styled from "styled-components";
 import Image from "next/image";
 import { UserOutlined } from "@ant-design/icons";
-import { Layout, Flex, Menu, Avatar, Modal } from "antd";
+import { Layout, Flex, Menu, Avatar, Modal, Dropdown, Button } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/store";
 import { useEffect, useState } from "react";
+import type { MenuProps } from "antd";
 import { fetchCategory } from "@/features/category/categorySlide";
 
 import HeaderStyle from "@/styles/header.module.scss";
 import LayoutStyle from "@/styles/layout.module.scss";
 import { fetchCountry } from "@/features/country/countrySlide";
+import { logout } from "@/features/user/userSlide";
 
 const { Header } = Layout;
 
 export default function HeaderComponent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  const userInfo = useSelector((state: RootState) => state.user.user);
   const isLoading = useSelector((state: RootState) => state.category.isLoading);
   const categories = useSelector(
     (state: RootState) => state.category.categories
   );
   const countries = useSelector((state: RootState) => state.country.countries);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   const dispatch = useDispatch<AppDispatch>();
 
+  const items: MenuProps["items"] = [
+    {
+      key: "/profile",
+      label: <Link href={"/profile"}>Profile</Link>,
+    },
+    {
+      key: "/logout",
+      label: (
+        <Link href={"#"} onClick={handleLogout}>
+          Logout
+        </Link>
+      ),
+    },
+  ];
+  if (userInfo?.is_superuser) {
+    items.splice(0, 0, {
+      key: "/admin",
+      label: <Link href={"/admin"}>Admin</Link>,
+    });
+  }
   useEffect(() => {
     dispatch(fetchCategory());
     dispatch(fetchCountry());
@@ -81,20 +98,16 @@ export default function HeaderComponent() {
                 ></MenuStyled>
               )}
             </div>
-            <Avatar size={44} icon={<UserOutlined />} onClick={showModal} />
+            <Dropdown
+              menu={{ items }}
+              placement="bottomRight"
+              arrow={{ pointAtCenter: true }}
+            >
+              <Avatar size={44} icon={<UserOutlined />} />
+            </Dropdown>
           </Flex>
         </Flex>
       </HeaderStyled>
-      <Modal
-        title="Basic Modal"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal>
     </>
   );
 }
