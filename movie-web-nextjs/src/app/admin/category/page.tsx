@@ -1,8 +1,6 @@
 "use client";
 
 import styled from "styled-components";
-import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   Col,
@@ -21,7 +19,6 @@ import {
 import { Content } from "antd/es/layout/layout";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/store";
-import type { ColumnsType } from "antd/es/table";
 import StyleLayout from "@/styles/layout.module.scss";
 import {
   addCategory,
@@ -183,22 +180,5 @@ const TitleDividerStyled = styled(Divider)`
   .ant-divider-inner-text {
     font-size: 24px;
     font-weight: 600;
-  }
-`;
-const LinkStyled = styled(Link)`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 12px;
-  padding: 20px;
-  background-color: #c51c41;
-  border-radius: 10px;
-
-  img {
-    position: relative !important;
-    max-width: 64px;
-  }
-  span {
-    font-size: 24px;
   }
 `;

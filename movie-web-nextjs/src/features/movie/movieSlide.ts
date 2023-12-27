@@ -1,6 +1,7 @@
 import axios from "@/axios/axios";
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { MovieDetailType, MovieType } from "@/types/movieTypes";
+import { createMovie, deleteMovie, patchMovie } from "./movieApi";
 
 export const fecthAllMovie = createAsyncThunk("movie/fetchAll", async () => {
   const response = await axios.get("/movie");
@@ -10,6 +11,27 @@ export const fecthMovieBySlug = createAsyncThunk(
   "movie/fetchDetail",
   async (slug: string) => {
     const response = await axios.get(`/movie/detail/${slug}`);
+    return await response.data;
+  }
+);
+export const addMovie = createAsyncThunk(
+  "movie/add",
+  async (data: MovieType) => {
+    const response = await createMovie(data);
+    return await response.data;
+  }
+);
+export const updateMovie = createAsyncThunk(
+  "movie/update",
+  async (data: MovieType) => {
+    const response = await patchMovie(data);
+    return await response.data;
+  }
+);
+export const removeMovie = createAsyncThunk(
+  "movie/delete",
+  async (data: MovieType) => {
+    const response = await deleteMovie(data);
     return await response.data;
   }
 );
@@ -26,21 +48,56 @@ export const movieSlide = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // Fecth All
-    builder.addCase(fecthAllMovie.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(fecthAllMovie.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.movies = action.payload;
-    });
-    // Fecth Detail
-    builder.addCase(fecthMovieBySlug.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(fecthMovieBySlug.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.movieDetail = action.payload;
-    });
+    builder
+      .addCase(fecthAllMovie.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fecthAllMovie.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.movies = action.payload;
+      })
+      // Fecth Detail
+      .addCase(fecthMovieBySlug.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fecthMovieBySlug.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.movieDetail = action.payload;
+      })
+      // Add Movie
+      .addCase(addMovie.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(addMovie.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.movies.push(action.payload);
+      })
+      // Update Movie
+      .addCase(updateMovie.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateMovie.fulfilled, (state, action) => {
+        state.isLoading = false;
+        console.log(action);
+
+        state.movies = state.movies.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, name: action.payload.name }
+            : item
+        );
+      })
+      // Delete Movie
+      .addCase(removeMovie.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(removeMovie.fulfilled, (state, action) => {
+        state.isLoading = false;
+        console.log(action);
+
+        state.movies = state.movies.filter(
+          (item) => item.id !== action.payload
+        );
+      });
   },
 });
 
