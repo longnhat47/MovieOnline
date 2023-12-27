@@ -74,7 +74,7 @@ export default function HeaderComponent() {
                   items={[
                     {
                       key: "/movie",
-                      label: <Link href="/">Phim</Link>,
+                      label: <Link href="/admin/movie">Phim</Link>,
                     },
                     {
                       key: "/category",
@@ -82,15 +82,15 @@ export default function HeaderComponent() {
                     },
                     {
                       key: "/country",
-                      label: <Link href="/">Quốc gia</Link>,
+                      label: <Link href="/admin/country">Quốc gia</Link>,
                     },
                     {
                       key: "/comment",
-                      label: <Link href="/">Bình luận</Link>,
+                      label: <Link href="/admin/comment">Bình luận</Link>,
                     },
                     {
                       key: "/user",
-                      label: <Link href="/">Người dùng</Link>,
+                      label: <Link href="/admin/user">Người dùng</Link>,
                     },
                   ]}
                   mode="horizontal"

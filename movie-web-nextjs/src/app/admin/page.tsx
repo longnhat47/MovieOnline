@@ -112,5 +112,9 @@ const LinkStyled = styled(Link)`
   }
   span {
     font-size: 24px;
+    color: #fff;
+    &:hover {
+      opacity: 0.7;
+    }
   }
 `;

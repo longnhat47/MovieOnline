@@ -181,6 +181,7 @@ export default function HeaderComponent() {
             rules={[{ required: true, message: "Please input your password!" }]}
           >
             <Input.Password
+              placeholder="Mật khẩu của bạn"
               onChange={(e) => setPasswordLogin(e.target.value)}
             />
           </Form.Item>
