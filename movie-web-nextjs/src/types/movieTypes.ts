@@ -14,17 +14,26 @@ type MovieType = {
   status?: boolean;
 };
 type MovieDetailType = {
-  id: string;
-  category: CategoryType[];
-  country: CountryType[];
-  name: string;
-  thumbnail: string;
-  description: string;
-  video: string;
-  comment: CommentType[];
-  views: number;
-  created_at: Date;
-  status: boolean;
+  id?: string;
+  category?: CategoryType[];
+  country?: CountryType[];
+  name?: string;
+  thumbnail?: string;
+  description?: string;
+  video?: string;
+  comment?: CommentType[];
+  views?: number;
+  created_at?: Date;
+  status?: boolean;
+};
+type MovieCreateType = {
+  id?: string;
+  name?: string;
+  description?: string;
+  category?: string;
+  country?: string;
+  thumbnail?: File;
+  video?: File;
 };
 
-export type { MovieType, MovieDetailType };
+export type { MovieType, MovieDetailType, MovieCreateType };

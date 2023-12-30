@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Title from "antd/es/typography/Title";
 import Image from "next/image";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Col,
   Divider,
@@ -18,6 +18,8 @@ import {
   Space,
   Spin,
   Popconfirm,
+  Upload,
+  Select,
 } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,26 +31,27 @@ import {
   updateMovie,
 } from "@/features/movie/movieSlide";
 import {
-  CheckCircleOutlined,
   CheckCircleTwoTone,
-  CloseCircleOutlined,
   CloseCircleTwoTone,
   DeleteOutlined,
   EditOutlined,
   PlusCircleOutlined,
   QuestionCircleOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
+import type { SelectProps } from "antd";
 import { fecthAllMovie } from "@/features/movie/movieSlide";
-import { MovieType } from "@/types/movieTypes";
+import { MovieCreateType, MovieType } from "@/types/movieTypes";
 import { fetchCategory } from "@/features/category/categorySlide";
 import { fetchCountry } from "@/features/country/countrySlide";
 
 const { Meta } = Card;
 const { Column } = Table;
+const { TextArea } = Input;
 
 export default function MovieManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dataInput, setDataInput] = useState<MovieType>({});
+  const [dataInput, setDataInput] = useState<MovieCreateType>({});
   const [controlName, setControlName] = useState("");
 
   const isLoading = useSelector((state: RootState) => state.movie.isLoading);
@@ -86,17 +89,19 @@ export default function MovieManager() {
     showModal();
     setControlName("ADD");
   };
-  const updateData = (data?: MovieType) => {
+  const updateData = (data?: MovieCreateType) => {
     showModal();
     setControlName("UPDATE");
     if (data) setDataInput(data);
   };
-  const deleteData = (data?: MovieType) => {
+  const deleteData = (data?: MovieCreateType) => {
     if (data) setDataInput(data);
   };
 
   const handleAddData = () => {
-    dispatch(addMovie({ name: dataInput.name }));
+    console.log(dataInput);
+
+    dispatch(addMovie(dataInput));
     setIsModalOpen(false);
   };
   const handleUpdate = () => {
@@ -107,6 +112,15 @@ export default function MovieManager() {
     dispatch(removeMovie({ id: dataInput.id }));
   };
 
+  const cateOptions: SelectProps<"options">[] = [];
+
+  categories.map((item, index) => {
+    cateOptions.push({ label: item.name, value: item.id });
+  });
+  const counOptions: SelectProps<"options">[] = [];
+  countries.map((item, index) => {
+    counOptions.push({ label: item.name, value: item.id });
+  });
   useEffect(() => {
     dispatch(fecthAllMovie());
     dispatch(fetchCategory());
@@ -223,27 +237,70 @@ export default function MovieManager() {
       </Content>
       <Modal open={isModalOpen} footer={null} onCancel={hideModal}>
         <Title>{controlName}</Title>
-        <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-          <Spin spinning={isLoading} tip={"Loading"}>
+        <Spin spinning={isLoading} tip={"Loading"}>
+          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
             <Input
               type="text"
-              placeholder="Tên quốc gia"
+              placeholder="Tên phim"
               onChange={(e) =>
                 setDataInput({ ...dataInput, name: e.target.value })
               }
               value={dataInput.name}
             />
-          </Spin>
-          {controlName == "ADD" ? (
-            <Button type="primary" onClick={handleAddData}>
-              Add
-            </Button>
-          ) : (
-            <Button type="primary" onClick={handleUpdate}>
-              Update
-            </Button>
-          )}
-        </Space>
+            <Select
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="Category"
+              onChange={(e) => {
+                setDataInput({ ...dataInput, category: e });
+              }}
+              value={dataInput.category}
+              options={cateOptions}
+            />
+            <Select
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="Country"
+              onChange={(e) => {
+                setDataInput({ ...dataInput, country: e });
+              }}
+              value={dataInput.country}
+              options={counOptions}
+            />
+            <TextArea
+              placeholder="Mô tả"
+              onChange={(e) =>
+                setDataInput({ ...dataInput, description: e.target.value })
+              }
+              value={dataInput.description}
+            />
+            <Upload
+              accept="image"
+              beforeUpload={() => false}
+              onChange={(e) =>
+                setDataInput({ ...dataInput, thumbnail: e.file })
+              }
+            >
+              <Button icon={<UploadOutlined />}>Upload thumbnail</Button>
+            </Upload>
+            <Upload
+              accept="video"
+              beforeUpload={() => false}
+              onChange={(e) => setDataInput({ ...dataInput, video: e.file })}
+            >
+              <Button icon={<UploadOutlined />}>Upload video</Button>
+            </Upload>
+            {controlName == "ADD" ? (
+              <Button type="primary" onClick={handleAddData}>
+                Add
+              </Button>
+            ) : (
+              <Button type="primary" onClick={handleUpdate}>
+                Update
+              </Button>
+            )}
+          </Space>
+        </Spin>
       </Modal>
     </>
   );

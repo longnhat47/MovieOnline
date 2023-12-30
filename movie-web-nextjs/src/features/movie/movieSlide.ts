@@ -1,6 +1,10 @@
 import axios from "@/axios/axios";
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { MovieDetailType, MovieType } from "@/types/movieTypes";
+import {
+  MovieCreateType,
+  MovieDetailType,
+  MovieType,
+} from "@/types/movieTypes";
 import { createMovie, deleteMovie, patchMovie } from "./movieApi";
 
 export const fecthAllMovie = createAsyncThunk("movie/fetchAll", async () => {
@@ -16,14 +20,14 @@ export const fecthMovieBySlug = createAsyncThunk(
 );
 export const addMovie = createAsyncThunk(
   "movie/add",
-  async (data: MovieType) => {
+  async (data: MovieCreateType) => {
     const response = await createMovie(data);
     return await response.data;
   }
 );
 export const updateMovie = createAsyncThunk(
   "movie/update",
-  async (data: MovieType) => {
+  async (data: MovieCreateType) => {
     const response = await patchMovie(data);
     return await response.data;
   }
@@ -64,6 +68,9 @@ export const movieSlide = createSlice({
         state.isLoading = false;
         state.movieDetail = action.payload;
       })
+      .addCase(fecthMovieBySlug.rejected, (state) => {
+        state.isLoading = false;
+      })
       // Add Movie
       .addCase(addMovie.pending, (state) => {
         state.isLoading = true;
@@ -71,6 +78,9 @@ export const movieSlide = createSlice({
       .addCase(addMovie.fulfilled, (state, action) => {
         state.isLoading = false;
         state.movies.push(action.payload);
+      })
+      .addCase(addMovie.rejected, (state) => {
+        state.isLoading = false;
       })
       // Update Movie
       .addCase(updateMovie.pending, (state) => {
@@ -86,6 +96,9 @@ export const movieSlide = createSlice({
             : item
         );
       })
+      .addCase(updateMovie.rejected, (state) => {
+        state.isLoading = false;
+      })
       // Delete Movie
       .addCase(removeMovie.pending, (state) => {
         state.isLoading = true;
@@ -97,6 +110,9 @@ export const movieSlide = createSlice({
         state.movies = state.movies.filter(
           (item) => item.id !== action.payload
         );
+      })
+      .addCase(removeMovie.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });
